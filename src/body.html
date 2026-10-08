@@ -1,0 +1,320 @@
+
+<canvas id="bgc" aria-hidden="true"></canvas>
+<canvas id="c" aria-label="Symmetry drawing canvas. Drag to draw and play notes."></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div class="top">
+  <div class="transport">
+    <span class="meta" id="meta">UNTITLED · BELL</span>
+    <button id="tPlay" aria-pressed="false" title="Space">▶ Play</button>
+    <button id="rec" aria-pressed="false" title="R">● Rec</button>
+    <button id="tMetro" aria-pressed="false" title="M">♩ Metronome</button>
+    <button id="tRoll" aria-pressed="false" title="T">▤ Timeline</button>
+    <button id="tRings" aria-pressed="false" title="O">◎ Notes</button>
+    <span class="pos" id="pos" aria-live="off">STOPPED</span>
+  </div>
+  <div class="btns">
+    <button id="tUndo" title="Ctrl/Cmd+Z">↶ Undo</button>
+    <button id="tRedo" title="Ctrl/Cmd+Shift+Z">↷ Redo</button>
+    <button id="tClear" title="C">✕ Clear</button>
+    <button id="composeBtn">✦ Compose</button>
+    <button id="snap" title="P">▣ Snapshot</button>
+    <button id="fs">⤢ Fullscreen</button>
+    <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="helpBtn" title="?">? Help</button>
+  </div>
+</div>
+
+<div class="timeline" id="timeline"><div class="tlwrap" id="tlWrap"><canvas id="tl" aria-label="Loop timeline and piano roll. Click to move the playhead; click an instrument name to mute it; in piano roll, click the grid to add a note."></canvas></div><div class="tlgrip" id="tlGrip" role="separator" aria-orientation="horizontal" aria-label="Drag to stretch the timeline taller" title="Drag down to stretch · double-click to toggle pitch view"></div><div class="tlz"><span class="rollopts" id="tlRollOpts" hidden><select id="prLen" aria-label="New note length"><option value="grid">GRID</option><option value=".25">1/16</option><option value=".5" selected>1/8</option><option value="1">1/4</option><option value="2">1/2</option><option value="4">1 BAR</option></select><button id="prSnap" aria-pressed="true">Snap</button><button id="prGhost" aria-pressed="true">Others</button><button id="tlSteps" aria-pressed="true" hidden>Steps</button><select id="tlEuclid" aria-label="Fill the steps evenly" hidden><option value="">FILL ▾</option><option value="0">0 HITS</option><option value="1">1 HITS</option><option value="2">2 HITS</option><option value="3">3 HITS</option><option value="4">4 HITS</option><option value="5">5 HITS</option><option value="6">6 HITS</option><option value="7">7 HITS</option><option value="8">8 HITS</option><option value="9">9 HITS</option><option value="10">10 HITS</option><option value="11">11 HITS</option><option value="12">12 HITS</option><option value="16">16 HITS</option></select><select id="tlAuto" aria-label="Automation lane"><option value="off">AUTOMATE ▾</option><option value="vol">VOLUME</option><option value="cut">FILTER</option></select></span><button id="tlDup" hidden>⧉ Duplicate</button><button id="tlDel" hidden>✕</button><button id="tlOut" aria-label="Zoom out">−</button><button id="tlFit" aria-label="Fit loop">1×</button><button id="tlIn" aria-label="Zoom in">+</button><button id="tlFull" aria-label="Full screen timeline" aria-pressed="false">⤢</button></div></div>
+<div class="tools" id="tools" role="toolbar" aria-label="Drawing tools"><button id="toolDraw" aria-pressed="true" aria-label="Draw">✎</button><button id="toolErase" aria-pressed="false" aria-label="Eraser">⌫</button><button id="toolMove" aria-pressed="false" aria-label="Move">✥</button></div>
+<div class="dpanel cpop" id="composePop" role="dialog" aria-label="Compose for me" hidden>
+  <div class="ptop"><span class="ttl">✦ Compose For Me</span></div>
+  <div class="grp">
+    <div class="field"><span class="lbl">Style</span><div class="seg" id="cStyle"><button data-v="calm">Calm</button><button data-v="groovy">Groovy</button><button data-v="bright">Bright</button><button data-v="dark">Dark</button></div></div>
+    <div class="field"><label class="lbl" for="cTracks">Tracks</label><input id="cTracks" type="range" min="1" max="8" value="4"><span class="val" id="cTracksVal">4</span></div>
+    <div class="field"><span class="lbl">Drums</span><button id="cDrums" aria-pressed="true">On</button></div>
+    <div class="field"><label class="lbl" for="cBars">Length</label><select id="cBars"><option value="1">1 BAR</option><option value="2">2 BARS</option><option value="4" selected>4 BARS</option><option value="8">8 BARS</option></select></div>
+    <div class="field"><label class="lbl" for="cBusy">Busyness</label><input id="cBusy" type="range" min="0" max="2" value="1"><span class="val" id="cBusyVal">Medium</span></div>
+    <div class="field"><label class="lbl" for="cKey">Key &amp; Tempo</label><select id="cKey"><option value="style">FROM THE STYLE</option><option value="keep">KEEP MINE</option></select></div>
+    <div class="field"><label class="lbl" for="cLook">Look</label><select id="cLook"><option value="mix">ONE PER TRACK</option><option value="match">ALL MATCHING</option></select></div>
+  </div>
+  <div class="hint">Replaces all your tracks · Undo brings them back.</div>
+  <div class="row cgo"><button id="cCancel">Cancel</button><button id="cGo" class="primary">✦ Compose</button></div>
+</div>
+<div class="tour" id="tour" hidden role="dialog" aria-label="Tutorial"><div class="tstep" id="tourStep"></div><div class="tt" id="tourTitle"></div><div class="tb" id="tourBody"></div><div class="row"><button id="tourSkip">Skip</button><button id="tourNext" class="primary">Next</button></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="tip" id="tip" role="tooltip"></div>
+<div class="restore" id="restore" hidden>
+  <span>Pick up where you left off?</span>
+  <div class="row"><button id="restoreYes" class="primary">Restore Last Session</button><button id="restoreNo">Start Fresh</button></div>
+</div>
+<div class="help" id="help" hidden>
+  <div class="card" role="dialog" aria-label="Keyboard shortcuts">
+    <h2>Shortcuts</h2>
+    <dl>
+      <dt><kbd>Space</kbd></dt><dd>Play / stop the loop</dd>
+      <dt><kbd>R</kbd></dt><dd>Record while drawing on / off</dd>
+      <dt><kbd>M</kbd></dt><dd>Metronome</dd>
+      <dt><kbd>T</kbd></dt><dd>Show / hide the timeline</dd>
+      <dt><kbd>B</kbd></dt><dd>Glide notes on / off</dd>
+      <dt><kbd>O</kbd></dt><dd>Notes overlay</dd>
+      <dt><kbd>N</kbd></dt><dd>Next chord type</dd>
+      <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Select a track</dd>
+      <dt><kbd>A</kbd>–<kbd>L</kbd></dt><dd>Play the scale (hold to sustain); while recording, each key is saved as a note</dd>
+      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Brush size</dd>
+      <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd>Symmetry</dd>
+      <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd>Undo</dd>
+      <dt><kbd>Ctrl/Cmd+Shift+Z</kbd> · <kbd>Y</kbd></dt><dd>Redo</dd>
+      <dt><kbd>Ctrl/Cmd+S</kbd></dt><dd>Save project</dd>
+      <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd>Clear the drawing (press twice; undo brings it back)</dd>
+      <dt><kbd>P</kbd></dt><dd>Snapshot</dd>
+      <dt><kbd>E</kbd> · <kbd>V</kbd></dt><dd>Eraser · move strokes (press again or Esc to draw)</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Close settings, or hide / show the bottom menu</dd>
+      <dt><kbd>?</kbd></dt><dd>This list</dd>
+    </dl>
+    <h2>Timeline</h2>
+    <dl>
+      <dt>Click / drag the ruler</dt><dd>Move the playhead (while stopped, Play starts there)</dd>
+      <dt>Drag across empty space</dt><dd>Select the notes inside the box</dd>
+      <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Nudge selected notes one grid step (Shift: one beat)</dd>
+      <dt>Drag a note</dt><dd>Move it in time (snaps to the grid)</dd>
+      <dt>Drag a note's right edge</dt><dd>Make it longer or shorter</dd>
+      <dt>Double-click a note</dt><dd>Delete it</dd>
+      <dt>Shift+click notes</dt><dd>Select several</dd>
+      <dt>Alt/Option+drag</dt><dd>Drag a copy</dd>
+      <dt><kbd>Ctrl/Cmd+C</kbd> <kbd>V</kbd></dt><dd>Copy / paste selected notes (pastes at the playhead)</dd>
+      <dt><kbd>Ctrl/Cmd+D</kbd></dt><dd>Duplicate right after</dd>
+      <dt><kbd>Delete</kbd></dt><dd>Delete selected notes</dd>
+      <dt><kbd>Ctrl/Cmd+A</kbd></dt><dd>Select every note on this track</dd>
+      <dt>+ / − · Ctrl+scroll · pinch</dt><dd>Zoom in / out; scroll to move along</dd>
+      <dt>Click a name</dt><dd>Mute that instrument (Shift+click to solo)</dd>
+      <dt>Drag the bottom edge down</dt><dd>Stretch the timeline taller; tall lanes show each note at its pitch (double-click the edge to toggle)</dd>
+      <dt>Timeline button</dt><dd>Opens the selected track's lane into a note grid right in the timeline: click to add a note (drag right to lengthen), right-click or double-click to delete, click a key to hear it. Pick another track's name to edit it instead</dd>
+      <dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Move selected notes up / down one scale step (Shift: an octave)</dd>
+      <dt>Drag a note up / down</dt><dd>In the tall view or piano roll: change its pitch one scale step at a time</dd>
+    </dl>
+    <div class="row"><button id="tourStart">▶ Tutorial</button><button id="helpClose">Close</button></div>
+  </div>
+</div>
+
+<div class="deck" id="deck">
+  <div class="head">
+    <!-- 1 · which track you're drawing on -->
+    <div class="drow">
+      <span class="sh">Tracks</span>
+      <div class="tracks" id="trackChips" role="group" aria-label="Tracks"></div>
+      <button id="addTrack">+ Track</button>
+      <div class="sright">
+        <div class="meters" aria-hidden="true"><i id="mb"></i><i id="mm"></i><i id="mh"></i><i id="mbeat" class="beat"></i></div>
+        <button id="focusBtn" aria-pressed="false">◐ Focus</button>
+        <button id="hideDeck" title="Esc">▾ Hide</button>
+      </div>
+    </div>
+    <!-- 2 · this track: sound and brush, then pop-ups for everything else, then the level -->
+    <div class="drow quick">
+      <input id="tName" type="text" maxlength="18" placeholder="Track name" aria-label="Track name">
+      <span class="qsep"></span>
+      <div class="ptabs" role="group" aria-label="Track settings"><button class="ptab" id="tabNotes" data-p="dp-play" aria-haspopup="true" aria-expanded="false">♪ Sound <span class="car">▴</span></button><button class="ptab" id="tabLook" data-p="dp-brush" aria-haspopup="true" aria-expanded="false">✦ Visuals <span class="car">▴</span></button></div>
+      <span class="qsep"></span>
+      <div class="field"><label class="lbl" for="tvol">Vol</label><input id="tvol" type="range" min="0" max="120" value="80"><span class="val" id="tvolVal">80</span></div>
+      <div class="ms"><button id="tMute" aria-pressed="false">Mute</button><button id="tSolo" aria-pressed="false">Solo</button><button id="tDup">Duplicate</button><button id="tClrNotes">Clear Notes</button><button id="tDel">Delete Track</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- track pop-ups: each opens above the bottom menu -->
+<div id="trackPops">
+  <!-- NOTES: how a touch turns into sound -->
+  <div class="dpanel tgrid" role="dialog" id="dp-play" hidden>
+    <div class="ptop"><span class="ttl">♪ Sound</span><button id="surpriseSound" class="surp">🎲 Surprise Me</button></div>
+    <div class="grp"><div class="gh">Instrument</div>
+      <div class="field"><span class="lbl">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
+      <div class="field"><label class="lbl" for="oct">Octave</label><input id="oct" type="range" min="-2" max="2" value="0"><span class="val" id="octVal">0</span></div>
+    </div>
+    <div class="grp"><div class="gh">Pitch</div>
+      <div class="field"><label class="lbl" for="chordSel">Chord</label><select id="chordSel">
+        <option value="single">SINGLE NOTE</option><option value="triad">TRIAD</option><option value="seventh">SEVENTH</option>
+        <option value="sus2">SUS2</option><option value="sus4">SUS4</option><option value="power">POWER</option>
+        <option value="ninth">ADD9</option><option value="octave">OCTAVES</option><option value="stack">FIFTHS STACK</option>
+      </select></div>
+      <div class="field"><label class="lbl" for="strum">Strum</label><input id="strum" type="range" min="0" max="120" value="0"><span class="val" id="strumVal">0 MS</span></div>
+    </div>
+    <div class="grp"><div class="gh">Rhythm</div>
+      <div class="field"><label class="lbl" for="arpSel">Arpeggiator</label><select id="arpSel"><option value="off">OFF</option><option value="up">UP</option><option value="down">DOWN</option><option value="updown">UP &amp; DOWN</option><option value="random">RANDOM</option></select></div>
+      <div class="field"><label class="lbl" for="holdSel">When Held</label><select id="holdSel"><option value="sustain">SUSTAIN NOTE</option><option value="repeat">REPEAT NOTE</option></select></div>
+      <div class="field"><label class="lbl" for="loopB">Loop Length</label><select id="loopB"><option value="0">FULL LOOP</option><option value="2">2 BEATS</option><option value="3">3 BEATS</option><option value="4">4 BEATS</option><option value="5">5 BEATS</option><option value="6">6 BEATS</option><option value="7">7 BEATS</option><option value="8">8 BEATS</option><option value="12">12 BEATS</option><option value="16">16 BEATS</option></select></div>
+      <div class="field"><label class="lbl" for="duck">Duck On Kick</label><input id="duck" type="range" min="0" max="100" value="0"><span class="val" id="duckVal">0</span></div>
+    </div>
+    <div class="grp"><div class="gh">Slide</div>
+      <div class="field"><span class="lbl">Glide</span><button id="glide" aria-pressed="false" title="B">Off</button></div>
+      <div class="field" id="glideRow"><label class="lbl" for="glideTime">Glide Time</label><input id="glideTime" type="range" min="20" max="600" value="140"><span class="val" id="glideVal">140 MS</span></div>
+    </div>
+    <div class="grp"><div class="gh">Sound Effects</div>
+      <div class="fxlist" id="aFxList"></div>
+      <div class="field"><span class="lbl"></span><select id="aFxAdd" aria-label="Add a sound effect"><option value="">+ ADD SOUND EFFECT</option><option value="reverb">REVERB</option><option value="echo">ECHO</option><option value="flanger">FLANGER</option><option value="chorus">CHORUS</option><option value="phaser">PHASER</option><option value="tremolo">TREMOLO</option><option value="wah">AUTO-WAH</option><option value="drive">DISTORTION</option><option value="crush">BITCRUSH</option><option value="lofi">LO-FI</option><option value="phone">TELEPHONE</option></select></div>
+    </div>
+  </div>
+  <!-- LOOK: the line, its colors and its visual effects (the brush is picked above) -->
+  <div class="dpanel tgrid" role="dialog" id="dp-brush" hidden>
+    <div class="ptop"><span class="ttl">✦ Visuals</span><button id="surpriseLook" class="surp">🎲 Surprise Me</button></div>
+    <div class="grp"><div class="gh">Line</div>
+      <div class="field"><span class="lbl">Brush</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
+      <div class="field" id="stampRow" hidden><label class="lbl" for="stampTxt">Stamp</label><div class="stampc"><input id="stampTxt" type="text" maxlength="4" value="✿" aria-label="Stamp text or emoji"><button id="stampUp">Image…</button><button id="stampClr" hidden>✕</button><input id="stampFile" type="file" accept="image/*" hidden></div></div>
+      <div class="field"><label class="lbl" for="width">Size</label><input id="width" type="range" min=".25" max="6" value="1" step=".25"><span class="val" id="widthVal">1</span></div>
+      <div class="field"><label class="lbl" for="tAlpha">Opacity</label><input id="tAlpha" type="range" min="5" max="100" value="100"><span class="val" id="tAlphaVal">100%</span></div>
+    </div>
+    <div class="grp"><div class="gh">Fading</div>
+      <div class="field"><label class="lbl" for="fade">Disappear</label><select id="fade"><option value="-1" selected>WITH NOTES</option>
+          <option value="3">AFTER 3 S</option><option value="6">AFTER 6 S</option><option value="10">AFTER 10 S</option>
+          <option value="20">AFTER 20 S</option><option value="40">AFTER 40 S</option><option value="0">NEVER</option>
+        </select></div>
+      <div class="field"><label class="lbl" for="trail">Trails</label><input id="trail" type="range" min="0" max="100" value="60"><span class="val" id="trailVal">60</span></div>
+    </div>
+    <div class="grp"><div class="gh">Palette</div>
+      <div class="field palf"><span class="lbl">Colors</span><div class="swatches mini" id="palSw"></div></div>
+      <div class="field"><span class="lbl">By Pitch</span><button id="pitchCol" aria-pressed="false">Off</button></div>
+      <div class="row" id="customRow" hidden>
+        <div class="field"><label class="lbl" for="c1">From</label><input id="c1" type="color" value="#ff5fa2"></div>
+        <div class="field"><label class="lbl" for="c2">To</label><input id="c2" type="color" value="#5fd4ff"></div>
+        <div class="field"><label class="lbl" for="c3">Then</label><input id="c3" type="color" value="#ffe27a"></div>
+      </div>
+    </div>
+    <div class="grp"><div class="gh">Tone</div>
+      <div class="field"><label class="lbl" for="bright">Brightness</label><input id="bright" type="range" min="40" max="140" value="100"><span class="val" id="brightVal">100%</span></div>
+      <div class="field"><label class="lbl" for="spread">Spread</label><input id="spread" type="range" min="0" max="100" value="50"><span class="val" id="spreadVal">50</span></div>
+      <div class="field"><span class="lbl">Drift</span><button id="drift" aria-pressed="true">On</button></div>
+    </div>
+    <div class="grp"><div class="gh">Visual Effects</div>
+      <div class="fxlist" id="vFxList"></div>
+      <div class="field"><span class="lbl"></span><select id="vFxAdd" aria-label="Add a visual effect"><option value="">+ ADD VISUAL EFFECT</option><option value="strobe">STROBE</option><option value="pulse">PULSE</option><option value="shimmer">SHIMMER</option><option value="rainbow">RAINBOW</option><option value="glow">GLOW</option><option value="spin">SPIN</option><option value="jitter">JITTER</option><option value="breathe">BREATHE</option></select></div>
+    </div>
+    <div class="grp"><div class="gh">Symmetry</div>
+      <div class="field"><label class="lbl" for="kalSel">Pattern</label><select id="kalSel"></select></div>
+      <div class="field"><label class="lbl" for="sym">Copies</label><input id="sym" type="range" min="1" max="16" value="8"><span class="val" id="symVal">8</span></div>
+      <div class="field"><span class="lbl">Mirror</span><button id="mirror" aria-pressed="true">On</button></div>
+    </div>
+    <div class="grp"><div class="gh">Place &amp; Motion</div>
+      <div class="field"><label class="lbl" for="tZone">Ring</label><select id="tZone"><option value="all">ANYWHERE</option><option value="auto">AUTO (BY TRACK)</option><option value="center">CENTER</option><option value="inner">INNER</option><option value="middle">MIDDLE</option><option value="outer">OUTER</option><option value="edge">EDGE</option></select></div>
+      <div class="field"><label class="lbl" for="spin">Spin</label><input id="spin" type="range" min="-100" max="100" value="30"><span class="val" id="spinVal">30</span></div>
+    </div>
+  </div>
+</div>
+
+<aside class="side" id="side" hidden aria-label="Settings">
+  <div class="sidehead"><span>Settings</span><button id="sideClose" aria-label="Close settings">✕</button></div>
+  <div class="tabs" role="tablist" aria-label="Settings">
+    <button role="tab" id="t-modes" aria-controls="p-modes" aria-selected="true">Visuals</button>
+    <button role="tab" id="t-sound" aria-controls="p-sound" aria-selected="false">Key</button>
+    <button role="tab" id="t-loop" aria-controls="p-loop" aria-selected="false">Loop</button>
+    <button role="tab" id="t-proj" aria-controls="p-presets" aria-selected="false">Save / Load</button>
+  </div>
+  <!-- MODES -->
+  <div class="panel" role="tabpanel" id="p-modes" aria-labelledby="t-modes">
+    <div class="sec">Audio Visual</div>
+    <div class="row">
+      <div class="field"><label class="lbl" for="vizSel">Mode</label>
+        <select id="vizSel">
+          <option value="spectrum">SPECTRUM RING</option><option value="wave">WAVEFORM HALO</option>
+          <option value="rays">SUN RAYS</option><option value="pulse">BEAT RINGS</option><option value="bars">INNER BARS</option><option value="dots">DOT RING</option><option value="aura">AURA</option><option value="petals">PETAL SPECTRUM</option><option value="scope">SCOPE</option><option value="comets">COMETS</option><option value="off">OFF</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl" for="react">Reactivity</label><input id="react" type="range" min="0" max="200" value="100"><span class="val" id="reactVal">100%</span></div>
+      <button id="beatFx" aria-pressed="true">Beat Flashes</button>
+    </div>
+    <div class="sec">Interface</div>
+    <div class="swatches" id="themeSw" role="group" aria-label="Interface theme"></div>
+    <div class="sec">Background</div>
+    <div class="row">
+      <div class="field"><label class="lbl" for="bgCustom">Color</label><input id="bgCustom" type="color" value="#000000"></div>
+      <div class="field"><label class="lbl" for="bgfx">Style</label><select id="bgfx"><option value="none">PLAIN</option><option value="stars">STARS</option><option value="twinkle">TWINKLING STARS</option><option value="warp">WARP SPEED</option><option value="dust">FLOATING DUST</option><option value="nebula">NEBULA</option><option value="aurora">AURORA</option><option value="geometry">SACRED GRID</option><option value="rings">PULSE RINGS</option></select></div>
+    </div>
+  </div>
+
+  <!-- SOUND -->
+  <div class="panel" role="tabpanel" id="p-sound" aria-labelledby="t-sound" hidden>
+    <div class="row">
+      <div class="field"><label class="lbl" for="scale">Scale</label>
+        <select id="scale">
+          <option value="penta">PENTATONIC</option><option value="minpenta">MINOR PENTATONIC</option>
+          <option value="hira">HIRAJOSHI</option><option value="insen">IN SEN</option>
+          <option value="dorian">DORIAN</option><option value="lydian">LYDIAN</option>
+          <option value="mixo">MIXOLYDIAN</option><option value="phryg">PHRYGIAN</option>
+          <option value="whole">WHOLE TONE</option><option value="minor">NATURAL MINOR</option>
+          <option value="harm">HARMONIC MINOR</option><option value="raga">RAGA BHAIRAV</option>
+          <option value="arabic">DOUBLE HARMONIC</option><option value="blues">BLUES</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl" for="key">Key</label>
+        <select id="key">
+          <option value="0">A</option><option value="1">B♭</option><option value="2">B</option><option value="3">C</option>
+          <option value="4">C♯</option><option value="5">D</option><option value="6">E♭</option><option value="7">E</option>
+          <option value="8">F</option><option value="9">F♯</option><option value="10">G</option><option value="11">A♭</option>
+        </select>
+      </div>
+      <div class="field"><label class="lbl" for="tuning">Tuning</label><select id="tuning"><option value="432">A = 432</option><option value="440">A = 440</option></select></div>
+    </div>
+  </div>
+
+  <!-- LOOP -->
+  <div class="panel" role="tabpanel" id="p-loop" aria-labelledby="t-loop" hidden>
+    <div class="row">
+      <div class="field"><label class="lbl" for="bpm">Tempo (BPM)</label><input id="bpm" type="range" min="50" max="160" value="84"><span class="val" id="bpmVal">84</span></div>
+      <button id="tap" title="Tap 4 times in time">Tap Tempo</button>
+      <div class="field"><label class="lbl" for="barsSel">Length</label>
+        <select id="barsSel"><option value="1">1 BAR</option><option value="2">2 BARS</option><option value="4">4 BARS</option><option value="8">8 BARS</option><option value="16">16 BARS</option><option value="32">32 BARS</option></select>
+      </div>
+      <div class="field"><label class="lbl" for="gridSel">Grid</label>
+        <select id="gridSel"><option value="1">1/4</option><option value="2">1/8</option><option value="4">1/16</option></select>
+      </div>
+    </div>
+    <div class="row">
+      <button id="quant" aria-pressed="true">Snap To Grid</button>
+      <div class="field"><label class="lbl" for="swing">Swing</label><input id="swing" type="range" min="0" max="100" value="0"></div>
+      <button id="countIn" aria-pressed="true">Count-In</button>
+      <div class="field"><label class="lbl" for="metroVol">Click Volume</label><input id="metroVol" type="range" min="0" max="100" value="60"></div>
+    </div>
+    <div class="sec">Edit</div>
+    <div class="row">
+      <button id="dblLoop">⧉ Double Loop</button>
+      <button id="quantNow">▦ Quantize Notes</button>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="panel" role="tabpanel" id="p-presets" aria-labelledby="t-proj" hidden>
+    <div class="row">
+      <input id="pname" type="text" placeholder="Name This Project" maxlength="30">
+      <button id="save" class="primary">Save Project</button>
+      <div class="presets" id="plist"></div>
+    </div>
+    <div class="row">
+      <button id="copyCode">Copy Share Code</button>
+      <button id="offlineCopy">⬇ Offline App</button>
+    </div>
+
+    <div class="sec">Export</div>
+    <div class="row">
+      <button id="exportVid">● Export Video</button>
+      <button id="exportImg">▣ Save Image</button>
+      <button id="exportGif">◎ Looping GIF</button>
+      <button id="exportAudio">♫ Audio + Stems</button>
+      <button id="exportMidi">⬇ MIDI</button>
+    </div>
+    <textarea id="codeIn" aria-label="Paste a share code" placeholder="PASTE A SHARE CODE HERE…"></textarea>
+    <div class="row"><button id="importCode">Load Code</button><span class="status" id="status" role="status"></span></div>
+  </div>
+</aside>
+<div class="brushPop" id="brushPop" hidden role="menu" aria-label="Brushes"></div>
+<div class="instPop" id="instPop" hidden role="menu" aria-label="Instruments"></div>
+<button id="showDeck" class="handle" hidden>▴ Show</button>
+<div id="peekZone" class="peek" hidden></div>
+
+<div class="count" id="count" aria-hidden="true" hidden></div>
+
+<div class="overlay" id="overlay" hidden>
+  <img id="snapImg" alt="Snapshot of your mandala">
+  <video id="snapVid" controls playsinline hidden></video>
+  <div class="hint" id="snapHint">Right-click or long-press the image to save it.</div>
+  <div class="row"><button id="saveSnap" class="primary" hidden>Save Image</button><button id="closeSnap">Close</button></div>
+</div>
+
