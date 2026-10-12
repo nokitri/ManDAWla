@@ -326,17 +326,23 @@ function frame(now){
 
   if (ac && S.loop){
     const L = LB(), b = beatsAt(ac.currentTime), pos = ((b % L) + L) % L, cur = Math.floor(pos);
-    const rr = Math.min(W,H)*.485, mc = LIGHT ? '40,36,48' : '235,225,205';
+    const rr = Math.min(W,H)*.485, mc = LIGHT ? '40,36,48' : ACC;
     const stp = L > 32 ? 4 : 1;   // long loops show one dot per bar
     for (let k=0;k<L;k+=stp){
       const a = k/L*TAU - Math.PI/2, on = cur >= k && cur < k + stp, down = k%(stp > 1 ? 16 : 4) === 0;
-      ctx.fillStyle = on ? `rgba(${rgbStr(paletteRGB(colorShift))},1)` : `rgba(${mc},${down ? .35 : .15})`;
-      ctx.beginPath(); ctx.arc(Math.cos(a)*rr, Math.sin(a)*rr, on ? 3.5 : down ? 2.2 : 1.4, 0, TAU); ctx.fill();
+      const ca = Math.cos(a), sa = Math.sin(a), ln = on ? 11 : down ? 7 : 4;   // HUD tick marks on the rim
+      ctx.strokeStyle = on ? `rgba(${rgbStr(paletteRGB(colorShift))},1)` : `rgba(${mc},${down ? .5 : .22})`; ctx.lineWidth = on ? 3 : down ? 2 : 1.2;
+      ctx.beginPath(); ctx.moveTo(ca*rr, sa*rr); ctx.lineTo(ca*(rr - ln), sa*(rr - ln)); ctx.stroke();
     }
   }
   ctx.rotate(-rot*.6);
-  { const ink = LIGHT ? '30,28,38' : '235,225,205';   // the edge of the playable circle
-    ctx.strokeStyle = `rgba(${ink},${.1 + bass*.12*re})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.stroke(); }
+  { const ink = LIGHT ? '30,28,38' : ACC, a = .24 + bass*.16*re;   // the edge of the playable circle, drawn as a targeting reticle
+    ctx.strokeStyle = `rgba(${ink},${a})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.stroke();
+    ctx.beginPath(); for (let k=0;k<72;k++){ const t = k/72*TAU, l = k % 6 ? 4 : 9, c = Math.cos(t), s = Math.sin(t); ctx.moveTo(c*R*1.01, s*R*1.01); ctx.lineTo(c*(R*1.01 + l), s*(R*1.01 + l)); } ctx.stroke();
+    ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${ink},${Math.min(1, a*2.6)})`;
+    for (let k=0;k<4;k++){ const t = k*TAU/4 + Math.PI/4; ctx.beginPath(); ctx.arc(0, 0, R*1.06, t - .07, t + .07); ctx.stroke(); }   // four corner brackets
+    ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${ink},${a*.7})`; ctx.beginPath(); const q = R*.06;   // centre crosshair
+    ctx.moveTo(-q, 0); ctx.lineTo(-q*.35, 0); ctx.moveTo(q*.35, 0); ctx.lineTo(q, 0); ctx.moveTo(0, -q); ctx.lineTo(0, -q*.35); ctx.moveTo(0, q*.35); ctx.lineTo(0, q); ctx.stroke(); }
   drawViz(R, now, dt);
   ctx.restore();
 

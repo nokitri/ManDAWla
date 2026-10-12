@@ -38,8 +38,8 @@ const SCALES = { penta:[0,2,4,7,9], minpenta:[0,3,5,7,10], hira:[0,2,3,7,8], ins
 
 /* ================= State ================= */
 const S = { sym:8, mirror:true, sing:true, draw:true, fade:-1, alpha:100, focus:false, zones:false, zone:'all', afxList:[{ type:'reverb', amt:40 }], vfxList:[], brush:'line', width:1,
-  palette:'rainbow', c1:'#ff5fa2', c2:'#5fd4ff', c3:'#ffe27a', drift:true, spread:50, bright:100,
-  bg:'custom', bgCustom:'#000000', stars:true, trail:60,
+  palette:'unit01', c1:'#ff5fa2', c2:'#5fd4ff', c3:'#ffe27a', drift:true, spread:50, bright:100,
+  bg:'custom', bgCustom:'#000000', stars:true, bgfx:'hex', trail:60,
   kal:'radial', spin:30, viz:'spectrum', react:100, beatFx:true,
   inst:'bell', scale:'penta', key:0, tuning:432, oct:0, verb:45, echo:20, loop:false, bpm:84, quant:true,
   bars:4, grid:4, swing:0, countIn:true, arp:'off', holdMode:'sustain', glide:false, glideTime:140, timeline:true, rings:false, holdDraw:true, chord:'single', strum:0, metro:false, metroVol:60, rec:false, mix:{},
@@ -78,6 +78,15 @@ function drawStars(){
     for (let i=0;i<9;i++){ const x = rnd()*W, y = rnd()*H, r = (.25 + rnd()*.45)*Math.max(W,H), c = rgbStr(paletteRGB(i/9 + .1));
       const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, `rgba(${c},${LIGHT ? .14 : .13})`); gr.addColorStop(1, `rgba(${c},0)`); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
     if (!LIGHT) { g.globalAlpha = .6; g.drawImage(stars, 0, 0, W, H); g.globalAlpha = 1; }
+  }
+  else if (st === 'hex'){   // a faint honeycomb in the interface accent, brighter toward the middle
+    const r = Math.max(18, Math.min(W, H)*.035), w = r*Math.sqrt(3), cx = W/2, cy = H/2, M = Math.hypot(W, H)*.5, a = LIGHT ? .1 : .085;
+    g.lineWidth = 1;
+    for (let row = -Math.ceil(cy/(r*1.5)) - 1; row*r*1.5 < H - cy + r*2; row++) for (let col = -Math.ceil(cx/w) - 1; col*w < W - cx + w; col++){
+      const x = cx + col*w + (row & 1 ? w/2 : 0), y = cy + row*r*1.5, d = Math.hypot(x - cx, y - cy)/M;
+      g.strokeStyle = `rgba(${LIGHT ? '40,36,48' : ACC},${a*(1.3 - d)})`; g.beginPath();
+      for (let k=0;k<6;k++){ const t = Math.PI/6 + k*Math.PI/3; g.lineTo(x + Math.cos(t)*r*.94, y + Math.sin(t)*r*.94); }
+      g.closePath(); g.stroke(); }
   }
   else if (st === 'geometry'){ // a faint flower-of-life grid behind everything
     const r = Math.min(W, H)*.115, ink = LIGHT ? '40,36,48' : '235,225,205', cx = W/2, cy = CY(), h = r*Math.sqrt(3)/2;
