@@ -1,8 +1,9 @@
 /* Layout: full-bleed drawing canvas; a tabbed control deck floats at the bottom, a slim status bar at the top */
 :root{
-  --bg:#000000; --ink:#121117; --ink2:#1b1a22; --gold:#e8c77e; --rose:#e38fb6; --aqua:#7fd8cd;
-  --text:#efeae0; --muted:#9a96a6; --line:rgba(232,199,126,.24);
+  --bg:#000000; --ink:#0b0805; --ink2:#17110a; --gold:#ff7a00; --rose:#e8322a; --aqua:#58f08a;
+  --text:#ffeacc; --muted:#a88a66; --line:rgba(255,122,0,.3);
   --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --disp:"Barlow Condensed", "Arial Narrow", Impact, sans-serif;
   color-scheme:dark;
 }
 html,body{height:100%}
@@ -221,3 +222,58 @@ html,body{overscroll-behavior:none}
   .brushPop{grid-template-columns:repeat(3,1fr)}
 }
 
+/* ================= HUD skin: retro-futurist command-center look (chamfered panels, condensed type, hazard stripes, scanlines) ================= */
+:root{--cut:5px;--pcut:14px}
+button,select,input[type=text],textarea{border-radius:0;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+button,select{font:600 13px var(--disp);letter-spacing:.1em}
+input[type=text],textarea{font-family:var(--mono)}
+button:where(:not([aria-pressed="true"]):not(.primary):not(.armed):not(.on)):hover,select:hover{background-color:color-mix(in srgb,var(--gold) 14%,transparent)}
+button.primary:hover{filter:brightness(1.15)}
+:focus-visible,label.file:focus-within{outline-offset:-3px}
+.fxb,.tchip .tdel,.timeline .tlz button,.timeline .tlz select,.chip button,.tabs [role=tab]{--cut:3px}
+.fxb{font-size:11px}
+.deck,.side,.dpanel,.instPop,.brushPop,.help .card,.tour,.restore,.timeline{border-radius:0;border:1px solid var(--line);border-top:2px solid var(--gold);box-shadow:none;clip-path:polygon(var(--pcut) 0,100% 0,100% calc(100% - var(--pcut)),calc(100% - var(--pcut)) 100%,0 100%,0 var(--pcut))}
+.timeline{--pcut:10px}.timeline.full{clip-path:none}
+.head{background:repeating-linear-gradient(-45deg,var(--gold) 0 7px,transparent 7px 14px) top/100% 4px no-repeat,var(--ink);padding-top:12px}
+.tabs [role=tab]{border-radius:0;font-size:13px}
+.tabs [role=tab][aria-selected=true]{color:#000}
+.ptab{border-radius:0}
+.lbl{font:500 12px var(--disp);letter-spacing:.14em}
+.val{color:var(--aqua);text-shadow:0 0 6px color-mix(in srgb,var(--aqua) 45%,transparent)}
+.ptop .ttl,.sidehead,.help h2,.gh,.drow .sh,.instPop .igh,.sec,.side .ph,.tour .tstep,.tour .tt{font-family:var(--disp);font-weight:700;letter-spacing:.2em}
+.ptop .ttl,.sidehead,.help h2{font-size:15px}
+.gh,.drow .sh,.instPop .igh,.sec,.tour .tstep{font-size:12px}
+.side .ph{font-size:14px;color:var(--gold)}
+.gh{color:var(--gold);opacity:1;border-bottom-color:var(--gold)}
+.gh::before,.side .ph::before,.ptop .ttl::before{content:'';display:inline-block;width:7px;height:7px;background:var(--gold);margin-right:7px;vertical-align:1px}
+.meta{border-radius:0;border-left:4px solid var(--gold);font:600 13px var(--disp);letter-spacing:.16em;color:var(--text)}
+.pos{border-radius:0;color:var(--aqua);text-shadow:0 0 8px color-mix(in srgb,var(--aqua) 55%,transparent);clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
+#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{background:var(--rose);border-color:var(--rose);color:#000;animation:hudBlink 1s steps(2,jump-none) infinite}
+@keyframes hudBlink{50%{background:transparent;color:var(--rose)}}
+.tools button{width:40px;height:44px;border-radius:0;--cut:0px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border:0;background:color-mix(in srgb,var(--gold) 16%,var(--ink))}
+.tools button:hover{background:color-mix(in srgb,var(--gold) 35%,var(--ink))}
+.tools button[aria-pressed=true]{background:var(--gold);color:#000}
+@media (max-width:640px){.tools button{width:36px;height:40px}}
+.tchip i{border-radius:0;width:9px;height:9px}
+.chip{border-radius:0}.swatches.mini .sw i,.sw i,#brushPrev,.instBtn,.brushBtn,.tile,input[type=color]{border-radius:0}
+#themeSw .sw i{border-radius:0;border:0;width:30px;height:34px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+#themeSw .sw[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 22%,transparent)}#themeSw .sw[aria-pressed="true"] i{outline:0}
+.meters i{border-radius:0;width:4px}
+.toast{border-radius:0;font:700 14px var(--disp);letter-spacing:.18em;color:#000;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
+.count{font-family:var(--disp);font-weight:700}
+.tip{border-radius:0;border:0;border-left:3px solid var(--gold)}
+.hint kbd,.help dt kbd,.tip kbd{border-radius:0}
+.overlay video,.overlay img{border-radius:0}
+.timeline .tlgrip::before{border-radius:0}
+.help,.overlay{background:rgba(0,0,0,.86) repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px)}
+/* CRT scanlines, a soft vignette and corner brackets over the whole screen (screen only: exports render from the canvases) */
+body::after{content:'';position:fixed;inset:0;z-index:10;pointer-events:none;
+  background:
+    linear-gradient(var(--gold),var(--gold)) 8px 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) 8px 8px/2px 26px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) right 8px top 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) right 8px top 8px/2px 26px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) left 8px bottom 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) left 8px bottom 8px/2px 26px no-repeat,
+    linear-gradient(var(--gold),var(--gold)) right 8px bottom 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) right 8px bottom 8px/2px 26px no-repeat,
+    repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at center,transparent 62%,rgba(0,0,0,.28));
+  opacity:.9}
+@media (prefers-reduced-motion:reduce){#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{animation:none}}

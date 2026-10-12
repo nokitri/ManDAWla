@@ -420,25 +420,25 @@ $('tlEuclid').onchange = e => { const v = e.target.value; e.target.value = ''; i
 $('tlAuto').onchange = e => { tlAuto = e.target.value; lanesAt = 0; if (tlAuto !== 'off') toast((tlAuto === 'vol' ? 'Volume' : 'Filter') + ' automation · drag in the strip under the grid'); };
 /* ---- interface themes (remembered in this browser) ---- */
 const THEMES = {
-  gold:   { name:'Night Gold', ink:'#121117', ink2:'#1b1a22', acc:'#e8c77e', rose:'#e38fb6', aqua:'#7fd8cd', text:'#efeae0', muted:'#9a96a6' },
-  ocean:  { name:'Deep Ocean', ink:'#0c141c', ink2:'#14202d', acc:'#72c4ff', rose:'#ff8fb1', aqua:'#7fe0c8', text:'#e6f0f7', muted:'#8ea2b4' },
-  rose:   { name:'Rose',       ink:'#1a1016', ink2:'#25171f', acc:'#f29bbd', rose:'#ffb38a', aqua:'#8fd8e0', text:'#f6e9ef', muted:'#ad93a2' },
-  forest: { name:'Forest',     ink:'#0e1611', ink2:'#16221a', acc:'#a2dc8c', rose:'#f0a07a', aqua:'#7fd8b8', text:'#e8f1e4', muted:'#8fa392' },
-  violet: { name:'Violet',     ink:'#130f1c', ink2:'#1d1729', acc:'#b9a2ff', rose:'#ff8fc7', aqua:'#7fd0ff', text:'#ece8f7', muted:'#9c96b2' },
-  ember:  { name:'Ember',      ink:'#170f0b', ink2:'#221711', acc:'#ff9f5a', rose:'#ff7a8a', aqua:'#7fd8cd', text:'#f6ece4', muted:'#a8978a' },
-  mono:   { name:'Graphite',   ink:'#111111', ink2:'#1c1c1c', acc:'#d6d6d6', rose:'#e0a0a0', aqua:'#a0d8d0', text:'#f0f0f0', muted:'#999999' }
+  nerv:   { name:'Command Orange', ink:'#0b0805', ink2:'#17110a', acc:'#ff7a00', rose:'#e8322a', aqua:'#58f08a', text:'#ffeacc', muted:'#a88a66' },
+  test:   { name:'Test Type',      ink:'#0d0914', ink2:'#181125', acc:'#9bff3a', rose:'#8f5cff', aqua:'#ff8a1f', text:'#ece4ff', muted:'#9488ad' },
+  proto:  { name:'Prototype',      ink:'#070b12', ink2:'#0f1622', acc:'#5ea8ff', rose:'#ffcc33', aqua:'#dff0ff', text:'#e6eef9', muted:'#8a9ab0' },
+  prod:   { name:'Production',     ink:'#120606', ink2:'#1e0b0b', acc:'#ff3b2f', rose:'#ff9a1f', aqua:'#ffd84a', text:'#ffe6e0', muted:'#ad8580' },
+  magi:   { name:'Supercomputer',  ink:'#030c06', ink2:'#08160c', acc:'#3dff7a', rose:'#ffb000', aqua:'#9dffcf', text:'#d6ffe2', muted:'#6fa583' },
+  blue:   { name:'Pattern Blue',   ink:'#06060f', ink2:'#0e0e1e', acc:'#4f6bff', rose:'#ff2a3c', aqua:'#7fe8ff', text:'#e4e8ff', muted:'#8890b8' },
+  mono:   { name:'Graphite',       ink:'#0d0d0d', ink2:'#191919', acc:'#d6d6d6', rose:'#e0574a', aqua:'#a0d8d0', text:'#f0f0f0', muted:'#999999' }
 };
-let theme = 'gold';
+let theme = 'nerv';
 function applyTheme(k){
-  const T = THEMES[k] || THEMES.gold, st = document.documentElement.style; theme = THEMES[k] ? k : 'gold';
+  const T = THEMES[k] || THEMES.nerv, st = document.documentElement.style; theme = THEMES[k] ? k : 'nerv';
   for (const [v, c] of [['--ink', T.ink], ['--ink2', T.ink2], ['--gold', T.acc], ['--rose', T.rose], ['--aqua', T.aqua], ['--text', T.text], ['--muted', T.muted]]) st.setProperty(v, c);
-  ACC = hexRGB(T.acc).join(','); st.setProperty('--line', `rgba(${ACC},.24)`);
+  ACC = hexRGB(T.acc).join(','); st.setProperty('--line', `rgba(${ACC},.3)`); drawStars();   // the hex background is tinted with the accent
   try { localStorage.setItem('mandawla-theme', theme); } catch {}
   const box = $('themeSw'); box.innerHTML = '';
   for (const key in THEMES){ const t = THEMES[key], b = document.createElement('button'); b.className = 'sw round'; b.setAttribute('aria-pressed', key === theme); b.setAttribute('aria-label', t.name); b.dataset.nm = t.name;
-    b.innerHTML = `<i style="background:linear-gradient(135deg,${t.acc} 0 50%,${t.ink2} 50% 100%)"></i>`; b.onclick = () => applyTheme(key); box.append(b); }
+    b.innerHTML = `<i style="background:linear-gradient(135deg,${t.acc} 0 50%,${t.rose} 50% 72%,${t.ink2} 72% 100%)"></i>`; b.onclick = () => applyTheme(key); box.append(b); }
 }
-try { theme = localStorage.getItem('mandawla-theme') || 'gold'; } catch {}
+try { theme = localStorage.getItem('mandawla-theme') || 'nerv'; } catch {}
 applyTheme(theme);
 function setTlFull(on){
   tlFull = on; $('timeline').classList.toggle('full', on); setP($('tlFull'), on); $('tlFull').textContent = on ? '⤡' : '⤢';

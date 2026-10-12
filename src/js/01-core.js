@@ -13,6 +13,9 @@ const hexRGB = h => [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parse
 function hsl2rgb(h,s,l){ h=((h%360)+360)%360; s/=100; l/=100; const k=n=>(n+h/30)%12, a=s*Math.min(l,1-l), f=n=>l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1))); return [f(0)*255,f(8)*255,f(4)*255]; }
 const PALETTES = {
   rainbow: { name:'Rainbow' },
+  unit01:  { name:'Unit Purple', stops:['#8f5cff','#5a2fc2','#9bff3a','#ff7a00'] },
+  nerv:    { name:'Command',  stops:['#ffd27a','#ff7a00','#e8322a','#7a1010'] },
+  magi:    { name:'Phosphor', stops:['#d6ffe2','#3dff7a','#14b85a','#ffb000'] },
   aurora:  { name:'Aurora',  stops:['#3cf2b0','#2bb6d9','#6d5df0','#c46cf5'] },
   ember:   { name:'Ember',   stops:['#ffe08a','#ff9a3d','#ff3d5a','#c0156a'] },
   ocean:   { name:'Ocean',   stops:['#c8f6ff','#4fd1e8','#2a7bd6','#4b44c8'] },
@@ -38,7 +41,7 @@ const BGS = {
   custom:  { name:'Custom' }
 };
 const rgbStr = c => `${c[0]|0},${c[1]|0},${c[2]|0}`;
-let ACC = '232,199,126';   // the interface accent as r,g,b (the canvases use it too)
+let ACC = '255,122,0';   // the interface accent as r,g,b (the canvases use it too)
 function sample(stops, t){
   t = ((t % 1) + 1) % 1; const u = t < .5 ? t*2 : 2 - t*2;
   const x = u*(stops.length-1), i = Math.min(stops.length-2, Math.floor(x)), f = x - i;

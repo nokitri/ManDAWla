@@ -42,6 +42,7 @@ function syncUI(){
 function applyPreset(p){
   dropSel();
   SAVED_KEYS.forEach(k => { if (p[k] !== undefined) S[k] = (k === 'mix' || k === 'tracks') ? JSON.parse(JSON.stringify(p[k])) : p[k]; });
+  if (p.bgfx === undefined) S.bgfx = '';   // saves from before background styles go by their stars flag
   S.tracks.forEach(t => { for (const k of ['loopB','duck','pitchCol','stamp','stampImg']) if (t[k] === undefined) t[k] = S_DEFAULTS[k]; });
   let legacyMap = null;
   if (!Array.isArray(p.tracks) || !p.tracks.length){ const lg = tracksFromLegacy(p); S.tracks = lg.tracks; legacyMap = lg.map; S.cur = S.tracks[0].id; }
