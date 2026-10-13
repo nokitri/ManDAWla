@@ -32,14 +32,3 @@
 ## Build
 
 There are no dependencies. `node build.js` glues `src/` into a single file, `dist/index.html`; open that in a browser. Every push to `master` builds and deploys to GitHub Pages (`.github/workflows/pages.yml`). See `CLAUDE.md` for how the source is laid out.
-
-## Versions
-
-| Version | What changed |
-|---|---|
-| 2.2.0 | strokes in the interface colour, draw anywhere, faster |
-| 2.1.0 | options back, colour picker, 7 languages, title card |
-| 2.0.0 | numnuts-style CRT look; trimmed down to draw, sound, style and stay length |
-| 1.0.0 | original symmetry-drawing mini DAW |
-
-The look comes from [numnuts](https://github.com/nokitri/numnuts).
