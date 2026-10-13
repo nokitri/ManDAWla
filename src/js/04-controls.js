@@ -157,6 +157,7 @@ $('spin').oninput = e => { S.spin = +e.target.value; $('spinVal').textContent = 
 $('react').oninput = e => { S.react = +e.target.value; $('reactVal').textContent = S.react + '%'; };
 $('width').oninput = e => { S.width = +e.target.value; $('widthVal').textContent = S.width; };
 $('sym').oninput = e => { S.sym = +e.target.value; $('symVal').textContent = S.sym; stashTrack(); };
+$('stay').onchange = e => { S.stay = +e.target.value; strokes.forEach(s => { if (!s.notes.length) s.endT = undefined; }); toast(S.stay ? 'Patterns stay ' + S.stay + ' s' : 'Patterns stay for good'); };
 $('fade').onchange = e => { S.fade = +e.target.value; stashTrack(); const n = performance.now(); strokes.forEach(s => { if (s.track === S.cur) s.born = n; }); };
 $('scale').onchange = e => { S.scale = e.target.value; };
 $('key').onchange = e => { S.key = +e.target.value; };
