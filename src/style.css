@@ -222,58 +222,41 @@ html,body{overscroll-behavior:none}
   .brushPop{grid-template-columns:repeat(3,1fr)}
 }
 
-/* ================= HUD skin: retro-futurist command-center look (chamfered panels, condensed type, hazard stripes, scanlines) ================= */
-:root{--cut:5px;--pcut:14px}
-button,select,input[type=text],textarea{border-radius:0;clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
-button,select{font:600 13px var(--disp);letter-spacing:.1em}
-input[type=text],textarea{font-family:var(--mono)}
-button:where(:not([aria-pressed="true"]):not(.primary):not(.armed):not(.on)):hover,select:hover{background-color:color-mix(in srgb,var(--gold) 14%,transparent)}
-button.primary:hover{filter:brightness(1.15)}
-:focus-visible,label.file:focus-within{outline-offset:-3px}
-.fxb,.tchip .tdel,.timeline .tlz button,.timeline .tlz select,.chip button,.tabs [role=tab]{--cut:3px}
-.fxb{font-size:11px}
-.deck,.side,.dpanel,.instPop,.brushPop,.help .card,.tour,.restore,.timeline{border-radius:0;border:1px solid var(--line);border-top:2px solid var(--gold);box-shadow:none;clip-path:polygon(var(--pcut) 0,100% 0,100% calc(100% - var(--pcut)),calc(100% - var(--pcut)) 100%,0 100%,0 var(--pcut))}
-.timeline{--pcut:10px}.timeline.full{clip-path:none}
-.head{background:repeating-linear-gradient(-45deg,var(--gold) 0 7px,transparent 7px 14px) top/100% 4px no-repeat,var(--ink);padding-top:12px}
-.tabs [role=tab]{border-radius:0;font-size:13px}
-.tabs [role=tab][aria-selected=true]{color:#000}
-.ptab{border-radius:0}
-.lbl{font:500 12px var(--disp);letter-spacing:.14em}
-.val{color:var(--aqua);text-shadow:0 0 6px color-mix(in srgb,var(--aqua) 45%,transparent)}
-.ptop .ttl,.sidehead,.help h2,.gh,.drow .sh,.instPop .igh,.sec,.side .ph,.tour .tstep,.tour .tt{font-family:var(--disp);font-weight:700;letter-spacing:.2em}
-.ptop .ttl,.sidehead,.help h2{font-size:15px}
-.gh,.drow .sh,.instPop .igh,.sec,.tour .tstep{font-size:12px}
-.side .ph{font-size:14px;color:var(--gold)}
-.gh{color:var(--gold);opacity:1;border-bottom-color:var(--gold)}
-.gh::before,.side .ph::before,.ptop .ttl::before{content:'';display:inline-block;width:7px;height:7px;background:var(--gold);margin-right:7px;vertical-align:1px}
-.meta{border-radius:0;border-left:4px solid var(--gold);font:600 13px var(--disp);letter-spacing:.16em;color:var(--text)}
-.pos{border-radius:0;color:var(--aqua);text-shadow:0 0 8px color-mix(in srgb,var(--aqua) 55%,transparent);clip-path:polygon(var(--cut) 0,100% 0,100% calc(100% - var(--cut)),calc(100% - var(--cut)) 100%,0 100%,0 var(--cut))}
-#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{background:var(--rose);border-color:var(--rose);color:#000;animation:hudBlink 1s steps(2,jump-none) infinite}
-@keyframes hudBlink{50%{background:transparent;color:var(--rose)}}
-.tools button{width:40px;height:44px;border-radius:0;--cut:0px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border:0;background:color-mix(in srgb,var(--gold) 16%,var(--ink))}
-.tools button:hover{background:color-mix(in srgb,var(--gold) 35%,var(--ink))}
-.tools button[aria-pressed=true]{background:var(--gold);color:#000}
-@media (max-width:640px){.tools button{width:36px;height:40px}}
-.tchip i{border-radius:0;width:9px;height:9px}
-.chip{border-radius:0}.swatches.mini .sw i,.sw i,#brushPrev,.instBtn,.brushBtn,.tile,input[type=color]{border-radius:0}
-#themeSw .sw i{border-radius:0;border:0;width:30px;height:34px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-#themeSw .sw[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 22%,transparent)}#themeSw .sw[aria-pressed="true"] i{outline:0}
-.meters i{border-radius:0;width:4px}
-.toast{border-radius:0;font:700 14px var(--disp);letter-spacing:.18em;color:#000;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)}
-.count{font-family:var(--disp);font-weight:700}
-.tip{border-radius:0;border:0;border-left:3px solid var(--gold)}
-.hint kbd,.help dt kbd,.tip kbd{border-radius:0}
-.overlay video,.overlay img{border-radius:0}
-.timeline .tlgrip::before{border-radius:0}
-.help,.overlay{background:rgba(0,0,0,.86) repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 4px)}
-/* CRT scanlines, a soft vignette and corner brackets over the whole screen (screen only: exports render from the canvases) */
+/* ================= Phosphor skin: numnuts-style CRT look (one glowing colour on black, VT323, square boxes, filled hovers, scanlines + flicker) ================= */
+:root{--mono:"VT323", ui-monospace, monospace;--disp:var(--mono);--bg:#050505}
+body{text-shadow:0 0 6px color-mix(in srgb,var(--gold) 70%,transparent)}
+.top,.deck,.overlay,.dpanel,.help .card,button,select,input[type=text],textarea,.toast,.tip,.lbl,.gh,.sec,.meta,.pos{text-transform:lowercase;letter-spacing:.04em}
+button,select,input[type=text],textarea{font:400 18px/1.1 var(--mono);border-radius:0;border-color:var(--gold);padding:2px 10px;text-shadow:inherit}
+.lbl,.val,.hint,.empty,.status,.fxrow .fxn,.fxrow .val,.tip,.help dl,.help dd,.tour .tb{font-family:var(--mono);font-size:17px}
+.gh,.drow .sh,.instPop .igh,.sec,.side .ph,.ptop .ttl,.sidehead,.help h2,.tour .tstep,.tour .tt,.meta,.pos{font:400 19px var(--mono);letter-spacing:.08em}
+button:hover:not(:disabled),button[aria-pressed="true"],button.primary,button.on,button.armed,.tabs [role=tab][aria-selected=true],.ptab[aria-expanded=true],#gsBtn[aria-expanded="true"],.timeline .tlz button[aria-pressed="true"]{background:var(--gold)!important;color:#000!important;border-color:var(--gold);text-shadow:none}
+button:hover:not(:disabled) .car,.ptab[aria-expanded=true] .car{color:#000}
+button:disabled{opacity:.3}
+.fxb,.tchip .tdel,.timeline .tlz button,.timeline .tlz select,.chip button,.tabs [role=tab],.ptab,.tools button,.instBtn,.brushBtn,.tile,.chip,.sw i,#brushPrev,input[type=color],.meters i,.tchip i,.pos,.meta,.hint kbd,.help dt kbd,.tip kbd{border-radius:0}
+.tabs [role=tab]{border:1px solid transparent;font-size:18px}
+.tour button,.quick .ms button,.quick #tName,.tchip,#addTrack,.chip button,.ptab,.seg button,.cpop .seg button,.stampc button,.surp,.instPop .igl button,.tile,.sw{font-size:16px}.fxb{font-size:14px}
+.tour .tt,.tour .tstep{text-transform:lowercase}
+.deck,.side,.dpanel,.instPop,.brushPop,.help .card,.tour,.restore,.timeline{border-radius:14px/10px;border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);background:color-mix(in srgb,var(--gold) 3%,#000);box-shadow:0 0 24px color-mix(in srgb,var(--gold) 12%,transparent),inset 0 0 40px rgba(0,0,0,.6)}
+.head{background:color-mix(in srgb,var(--gold) 3%,#000)}
+.timeline.full{border-radius:0}
+.tools button{border:1px solid var(--gold);background:#000;font-size:18px}
+.tchip[aria-pressed="true"],.instPop .igl button[aria-pressed=true],.tile[aria-pressed="true"]{background:var(--gold);color:#000;text-shadow:none}
+.meta,.pos,.top button{background:#000}
+.pos{border-color:var(--gold);color:var(--text)}
+.val{color:var(--text)}
+input[type=range]{accent-color:var(--gold)}
+#themeSw .sw i{border:0;width:28px;height:28px}
+#themeSw .sw[aria-pressed="true"] i{outline:2px solid #fff;outline-offset:1px}
+#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{background:var(--gold);border-color:var(--gold);color:#000;animation:blinkOn 1s steps(2,jump-none) infinite}
+@keyframes blinkOn{50%{background:#000;color:var(--gold)}}
+.toast{border-radius:0;font:400 20px var(--mono);color:#000;text-shadow:none;box-shadow:0 0 24px var(--gold)}
+.count{font-family:var(--mono);font-weight:400;background:var(--gold);color:#000!important;text-shadow:none;padding:0 .12em;line-height:.85;box-shadow:0 0 40px var(--gold),0 0 0 6px #000,0 0 0 8px var(--gold)}
+.tip{border:1px solid var(--gold);background:#000}
+.help,.overlay{background:rgba(0,0,0,.8)}
+:focus-visible,label.file:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+/* CRT, always on: scanlines, vignette, flicker (screen only: exports render from the canvases) */
 body::after{content:'';position:fixed;inset:0;z-index:10;pointer-events:none;
-  background:
-    linear-gradient(var(--gold),var(--gold)) 8px 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) 8px 8px/2px 26px no-repeat,
-    linear-gradient(var(--gold),var(--gold)) right 8px top 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) right 8px top 8px/2px 26px no-repeat,
-    linear-gradient(var(--gold),var(--gold)) left 8px bottom 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) left 8px bottom 8px/2px 26px no-repeat,
-    linear-gradient(var(--gold),var(--gold)) right 8px bottom 8px/26px 2px no-repeat, linear-gradient(var(--gold),var(--gold)) right 8px bottom 8px/2px 26px no-repeat,
-    repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),
-    radial-gradient(ellipse at center,transparent 62%,rgba(0,0,0,.28));
-  opacity:.9}
-@media (prefers-reduced-motion:reduce){#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{animation:none}}
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);
+  animation:crtFlicker .12s infinite}
+@keyframes crtFlicker{0%,100%{opacity:.94}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){body::after,#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{animation:none}}
