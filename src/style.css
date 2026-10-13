@@ -293,3 +293,8 @@ button.swatch .ic{display:inline-block;width:.7em;height:.7em;background:var(--g
 .swatches.mini .sw[aria-pressed=true]{border-color:#fff;outline:0}
 .swatches.mini .sw[aria-pressed=true] i{outline:0}
 .simple .swatches.mini .sw i{width:22px!important;height:22px!important}
+/* 3D mode: drawing layers tip back like a disc on a table (D3_P and D3_TILT in the JS must match) */
+body.d3 canvas#bgc,body.d3 canvas#c,body.d3 canvas#fx,body.d3 canvas.trailLayer{transform-origin:50% var(--cy,50%);transform:perspective(1100px) rotateX(48deg)}
+/* brush tiles: the preview is drawn in the interface colour, so the selected tile gets an outline, not a fill */
+.brushPop .tile[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 14%,#000)!important;outline:2px solid var(--gold);outline-offset:-2px}
+#brushBtn:hover:not(:disabled),#brushBtn[aria-expanded="true"]{background:color-mix(in srgb,var(--gold) 14%,#000)!important;box-shadow:0 0 10px var(--gold)}

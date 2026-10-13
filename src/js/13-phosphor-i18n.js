@@ -50,3 +50,11 @@ $('colorBtn').onclick = e => { e.stopPropagation(); setPal($('palette').hidden);
 $('phosCustom').oninput = e => { THEMES.custom = phosphor('Custom', e.target.value); try { localStorage.setItem('mandawla-custom', e.target.value); } catch {} applyTheme('custom'); renderPhos(); };
 addEventListener('pointerdown', e => { if (!$('palette').hidden && !e.target.closest('#palette,#colorBtn')) setPal(false); });
 applyLang();
+
+/* ================= 3D mode: the mandala tilts back in perspective (drawing still lands where you point) ================= */
+var D3 = false; const D3_P = 1100, D3_TILT = 48;
+function setD3(on){ D3 = on; document.body.classList.toggle('d3', on); document.documentElement.style.setProperty('--cy', CY() + 'px'); setP($('d3Btn'), on);
+  try { localStorage.setItem('mandawla-3d', on ? '1' : ''); } catch {} }
+$('d3Btn').onclick = () => setD3(!D3);
+addEventListener('resize', () => document.documentElement.style.setProperty('--cy', CY() + 'px'));
+try { if (localStorage.getItem('mandawla-3d')) setD3(true); } catch {}

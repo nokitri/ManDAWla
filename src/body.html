@@ -23,6 +23,7 @@
     <button id="snap" data-gone title="P">▣ Snapshot</button>
     <button id="fs">⤢ Fullscreen</button>
     <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="d3Btn" aria-pressed="false" title="3D">◇ 3D</button>
     <button id="langBtn" title="L">◍ EN</button>
     <span class="pop"><button id="colorBtn" class="swatch" aria-haspopup="true" aria-expanded="false" title="K">▣ Color</button><div id="palette" class="dpanel" hidden><div id="phos"></div><label><span data-i18n="Custom">Custom</span> <input id="phosCustom" type="color" value="#ff4fd8"></label></div></span>
     <button id="helpBtn" title="?">? Help</button>
@@ -74,7 +75,7 @@
     <div class="drow simple">
       <div class="field"><span class="lbl" data-i18n="Sound">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
       <div class="field"><span class="lbl" data-i18n="Style">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
-      <div class="field palf"><span class="lbl" data-i18n="Colors">Colors</span><div class="swatches mini" id="palSw"></div></div>
+      <div class="field palf" data-gone><span class="lbl" data-i18n="Colors">Colors</span><div class="swatches mini" id="palSw"></div></div>
       <div class="field"><label class="lbl" for="stay" data-i18n="Stays">Stays</label><select id="stay"><option value="1">1 S</option><option value="2" selected>2 S</option><option value="5">5 S</option><option value="10">10 S</option><option value="30">30 S</option><option value="0" data-i18n="Forever">FOREVER</option></select></div>
       <div class="sright"><button id="hideDeck" title="Esc" data-i18n="▾ Hide">▾ Hide</button></div>
     </div>
@@ -145,7 +146,7 @@
         </select></div>
       <div class="field"><label class="lbl" for="trail">Trails</label><input id="trail" type="range" min="0" max="100" value="60"><span class="val" id="trailVal">60</span></div>
     </div>
-    <div class="grp"><div class="gh">Palette</div>
+    <div class="grp" data-gone><div class="gh">Palette</div>
             <div class="field"><span class="lbl">By Pitch</span><button id="pitchCol" aria-pressed="false">Off</button></div>
       <div class="row" id="customRow" hidden>
         <div class="field"><label class="lbl" for="c1">From</label><input id="c1" type="color" value="#ff5fa2"></div>
