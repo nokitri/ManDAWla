@@ -23,6 +23,7 @@
     <button id="snap" data-gone title="P">▣ Snapshot</button>
     <button id="fs">⤢ Fullscreen</button>
     <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="d3Btn" aria-pressed="false" title="3D">◇ 3D</button>
     <button id="langBtn" title="L">◍ EN</button>
     <span class="pop"><button id="colorBtn" class="swatch" aria-haspopup="true" aria-expanded="false" title="K">▣ Color</button><div id="palette" class="dpanel" hidden><div id="phos"></div><label><span data-i18n="Custom">Custom</span> <input id="phosCustom" type="color" value="#ff4fd8"></label></div></span>
     <button id="helpBtn" title="?">? Help</button>
@@ -30,7 +31,7 @@
 </div>
 
 <div class="timeline" id="timeline" data-gone><div class="tlwrap" id="tlWrap"><canvas id="tl" aria-label="Loop timeline and piano roll. Click to move the playhead; click an instrument name to mute it; in piano roll, click the grid to add a note."></canvas></div><div class="tlgrip" id="tlGrip" role="separator" aria-orientation="horizontal" aria-label="Drag to stretch the timeline taller" title="Drag down to stretch · double-click to toggle pitch view"></div><div class="tlz"><span class="rollopts" id="tlRollOpts" hidden><select id="prLen" aria-label="New note length"><option value="grid">GRID</option><option value=".25">1/16</option><option value=".5" selected>1/8</option><option value="1">1/4</option><option value="2">1/2</option><option value="4">1 BAR</option></select><button id="prSnap" aria-pressed="true">Snap</button><button id="prGhost" aria-pressed="true">Others</button><button id="tlSteps" aria-pressed="true" hidden>Steps</button><select id="tlEuclid" aria-label="Fill the steps evenly" hidden><option value="">FILL ▾</option><option value="0">0 HITS</option><option value="1">1 HITS</option><option value="2">2 HITS</option><option value="3">3 HITS</option><option value="4">4 HITS</option><option value="5">5 HITS</option><option value="6">6 HITS</option><option value="7">7 HITS</option><option value="8">8 HITS</option><option value="9">9 HITS</option><option value="10">10 HITS</option><option value="11">11 HITS</option><option value="12">12 HITS</option><option value="16">16 HITS</option></select><select id="tlAuto" aria-label="Automation lane"><option value="off">AUTOMATE ▾</option><option value="vol">VOLUME</option><option value="cut">FILTER</option></select></span><button id="tlDup" hidden>⧉ Duplicate</button><button id="tlDel" hidden>✕</button><button id="tlOut" aria-label="Zoom out">−</button><button id="tlFit" aria-label="Fit loop">1×</button><button id="tlIn" aria-label="Zoom in">+</button><button id="tlFull" aria-label="Full screen timeline" aria-pressed="false">⤢</button></div></div>
-<div class="tools" id="tools" role="toolbar" aria-label="Drawing tools"><button id="toolDraw" aria-pressed="true" aria-label="Draw">✎</button><button id="toolErase" aria-pressed="false" aria-label="Eraser">⌫</button><button id="toolMove" aria-pressed="false" aria-label="Move">✥</button></div>
+<div class="tools" id="tools" data-gone role="toolbar" aria-label="Drawing tools"><button id="toolDraw" aria-pressed="true" aria-label="Draw">✎</button><button id="toolErase" aria-pressed="false" aria-label="Eraser">⌫</button><button id="toolMove" aria-pressed="false" aria-label="Move">✥</button></div>
 <div class="dpanel cpop" id="composePop" role="dialog" aria-label="Compose for me" hidden>
   <div class="ptop"><span class="ttl">✦ Compose For Me</span></div>
   <div class="grp">
@@ -62,7 +63,6 @@
       <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd data-i18n="Symmetry">Symmetry</dd>
       <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd data-i18n="Undo">Undo</dd>
       <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd data-i18n="Clear the drawing (press twice; undo brings it back)">Clear the drawing (press twice; undo brings it back)</dd>
-      <dt><kbd>E</kbd> · <kbd>V</kbd></dt><dd data-i18n="Eraser · move strokes (press again or Esc to draw)">Eraser · move strokes (press again or Esc to draw)</dd>
       <dt><kbd>Esc</kbd></dt><dd data-i18n="Hide / show the bottom menu">Hide / show the bottom menu</dd>
       <dt><kbd>?</kbd></dt><dd data-i18n="This list">This list</dd>
     </dl>
@@ -75,7 +75,7 @@
     <div class="drow simple">
       <div class="field"><span class="lbl" data-i18n="Sound">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
       <div class="field"><span class="lbl" data-i18n="Style">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
-      <div class="field palf"><span class="lbl" data-i18n="Colors">Colors</span><div class="swatches mini" id="palSw"></div></div>
+      <div class="field palf" data-gone><span class="lbl" data-i18n="Colors">Colors</span><div class="swatches mini" id="palSw"></div></div>
       <div class="field"><label class="lbl" for="stay" data-i18n="Stays">Stays</label><select id="stay"><option value="1">1 S</option><option value="2" selected>2 S</option><option value="5">5 S</option><option value="10">10 S</option><option value="30">30 S</option><option value="0" data-i18n="Forever">FOREVER</option></select></div>
       <div class="sright"><button id="hideDeck" title="Esc" data-i18n="▾ Hide">▾ Hide</button></div>
     </div>
@@ -146,7 +146,7 @@
         </select></div>
       <div class="field"><label class="lbl" for="trail">Trails</label><input id="trail" type="range" min="0" max="100" value="60"><span class="val" id="trailVal">60</span></div>
     </div>
-    <div class="grp"><div class="gh">Palette</div>
+    <div class="grp" data-gone><div class="gh">Palette</div>
             <div class="field"><span class="lbl">By Pitch</span><button id="pitchCol" aria-pressed="false">Off</button></div>
       <div class="row" id="customRow" hidden>
         <div class="field"><label class="lbl" for="c1">From</label><input id="c1" type="color" value="#ff5fa2"></div>
@@ -185,8 +185,8 @@
   </div>
   <!-- MODES -->
   <div class="panel" role="tabpanel" id="p-modes" aria-labelledby="t-modes">
-    <div class="sec">Audio Visual</div>
-    <div class="row">
+    <div class="sec" data-gone>Audio Visual</div>
+    <div class="row" data-gone>
       <div class="field"><label class="lbl" for="vizSel">Mode</label>
         <select id="vizSel">
           <option value="spectrum">SPECTRUM RING</option><option value="wave">WAVEFORM HALO</option>

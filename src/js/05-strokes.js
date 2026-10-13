@@ -3,12 +3,15 @@ const strokes = [], active = new Map(), sparks = [], ripples = [], pulses = [];
 let rot = 0, ANG = {}, lastNote = 0, lastIdx = -1, tunnelPhase = 0, colorShift = 0, frameNow = 0;
 const CY = () => H/2 - Math.min(30, H*.03);
 const maxR = () => Math.min(W,H)*.46;
+const fieldR = () => Math.hypot(W, H)*.5;   // the whole screen is drawable, out to the corners
 function toLocal(x, y){
-  const dx = x - W/2, dy = y - CY(), c = Math.cos(-rot), s = Math.sin(-rot);
+  let dx = x - W/2, dy = y - CY();
+  if (D3){ const p = D3_P, a = D3_TILT*Math.PI/180, v = dy*p/(p*Math.cos(a) + dy*Math.sin(a)); dx *= (p - v*Math.sin(a))/p; dy = v; }   // undo the 3D tilt
+  const c = Math.cos(-rot), s = Math.sin(-rot);
   return [dx*c - dy*s, dx*s + dy*c];
 }
 function idxAt(lx, ly){
-  const n = SCALES[S.scale].length * 3, d = Math.min(1, Math.hypot(lx,ly)/maxR());
+  const n = SCALES[S.scale].length * 3, d = Math.min(1, Math.hypot(lx,ly)/fieldR());   // pitch spans the whole screen: corners low, centre high
   return Math.max(0, Math.min(n-1, Math.floor((1-d)*n)));
 }
 let strokeCount = 0;
@@ -21,7 +24,7 @@ function addPoint(st, lx, ly, now, silent){
   const p = st.pts, last = p[p.length-1];
   if (p.length > 900) return;
   if (last && Math.hypot(lx-last[0], ly-last[1]) < 3) return;
-  if (Math.hypot(lx, ly) > maxR()) return;
+  if (Math.hypot(lx, ly) > fieldR()*1.5) return;
   p.push([lx, ly]); st.born = now; st.dirty = true;
   st.movedAt = now;
   if (silent || !S.sing) return;
@@ -160,7 +163,7 @@ cv.addEventListener('pointerdown', e => {
   startStroke(e.pointerId, e.clientX, e.clientY);
 });
 const waiting = new Set();
-const outside = (x, y) => { const [lx, ly] = toLocal(x, y); return Math.hypot(lx, ly) > maxR(); };
+const outside = () => false;   // no circle limit: draw anywhere
 function startStroke(id, x, y){
   pushHistory();
   const st = newStroke(); strokes.push(st); active.set(id, st);
@@ -278,10 +281,9 @@ function strokeRGB(st, k, glow, n = S.sym){
   const spread = (+trackVal(tk, 'spread') || 0)/100, drift = trackVal(tk, 'drift') ? frameNow*.00003 : 0;
   let t = st.t0 + (k/n)*spread*.6 + drift + colorShift + mid*.08*(S.react/100);
   if (tk && trackVal(tk, 'pitchCol')){ const pt = pitchT(st); t = (st.pal === 'rainbow' ? pt*.85 : pt*.5) + (k/n)*spread*.08 + drift*.3; }   // each ring has its own color
-  let c;
-  if (st.pal === 'rainbow') c = hsl2rgb(t*360, 88, LIGHT ? 45 : 60);
+  let c = sample(UI_STOPS, t);   // every stroke is a shade of the interface colour
+  if (false) c = hsl2rgb(t*360, 88, LIGHT ? 45 : 60);
   else if (st.pal === 'custom') c = sample((st.cs || [S.c1,S.c2,S.c3]).map(hexRGB), t);
-  else c = sample(STOPS[st.pal] || STOPS.aurora, t);
   const b = (+trackVal(tk, 'bright') || 100)/100;
   if (LIGHT){ const d = .25 + glow*.15; c = c.map(v => v*(1-d)*Math.min(1,b+.2)); }
   else { const w = Math.min(.6, glow*.3); c = c.map(v => Math.min(255, (v + (255-v)*w)*b)); }

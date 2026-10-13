@@ -59,7 +59,7 @@ const drawLayers = (g, w, h) => { for (let i = 1; i < TRAIL_LAYERS.length; i++) 
 function drawStrokes(C0, M0, now){
   const re = S.react/100;
   const breathe = 1 + (bass*.05 + beat*.08)*re, lv = [bass, mid, high];
-  const core = LIGHT ? 'rgba(20,18,24,.6)' : 'rgba(255,252,245,.8)';
+  const core = LIGHT ? 'rgba(20,18,24,.6)' : 'rgba(255,252,245,.22)';   // a faint hot core, so strokes keep their colour instead of going white
   const base = ctx.getTransform(), cols = new Array(16), mains = new Array(16);
   // crowded screens get gentler strokes so additive glow doesn't wash out to white
   const dens = LIGHT ? 1 : Math.max(.42, Math.min(1, 1.12 - strokes.length*C0.length/900));
@@ -301,8 +301,8 @@ function frame(now){
   ctx.fillStyle = `rgba(0,0,0,${fadeA})`; ctx.fillRect(0,0,W,H);
   if (frameN % 12 === 0){ ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0,0,W,H); }   // clears the faint residue a slow fade leaves behind
 
-  ctx.save(); ctx.translate(W/2, CY()); ctx.globalCompositeOperation = LIGHT ? 'source-over' : 'lighter';
-  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.clip(); ctx.rotate(rot);
+  ctx.save(); ctx.translate(W/2, CY()); ctx.globalCompositeOperation = LIGHT ? 'source-over' : 'screen';   // screen, not lighter: overlaps glow without burning to white
+  ctx.save(); ctx.rotate(rot);   // no circular clip: strokes fill the whole screen
   if (!li){
   C = copies(now); M = copyMatrices(C);
   SYMSETS = { [S.kal + '|' + S.sym + '|' + (S.mirror ? 1 : 0)]: { C, M, n: S.sym } };
@@ -337,14 +337,7 @@ function frame(now){
     }
   }
   ctx.rotate(-rot*.6);
-  { const ink = LIGHT ? '30,28,38' : ACC, a = .24 + bass*.16*re;   // the edge of the playable circle, drawn as a targeting reticle
-    ctx.strokeStyle = `rgba(${ink},${a})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.stroke();
-    ctx.beginPath(); for (let k=0;k<72;k++){ const t = k/72*TAU, l = k % 6 ? 4 : 9, c = Math.cos(t), s = Math.sin(t); ctx.moveTo(c*R*1.01, s*R*1.01); ctx.lineTo(c*(R*1.01 + l), s*(R*1.01 + l)); } ctx.stroke();
-    ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${ink},${Math.min(1, a*2.6)})`;
-    for (let k=0;k<4;k++){ const t = k*TAU/4 + Math.PI/4; ctx.beginPath(); ctx.arc(0, 0, R*1.06, t - .07, t + .07); ctx.stroke(); }   // four corner brackets
-    ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${ink},${a*.7})`; ctx.beginPath(); const q = R*.06;   // centre crosshair
-    ctx.moveTo(-q, 0); ctx.lineTo(-q*.35, 0); ctx.moveTo(q*.35, 0); ctx.lineTo(q, 0); ctx.moveTo(0, -q); ctx.lineTo(0, -q*.35); ctx.moveTo(0, q*.35); ctx.lineTo(0, q); ctx.stroke(); }
-  drawViz(R, now, dt);
+  // no reticle or visualizer ring: the field is open edge to edge
   ctx.restore();
 
   if (ripples.length){

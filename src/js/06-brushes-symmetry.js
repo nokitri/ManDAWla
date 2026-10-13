@@ -169,7 +169,7 @@ function previewOn(c, brush){
   const g = c.getContext('2d'); g.setTransform(2,0,0,2,0,0); g.clearRect(0,0,88,28); g.lineCap = g.lineJoin = 'round';
   const st = { brush, width:1.4, seed:7, pts:[] };
   for (let i=0;i<=40;i++){ st.pts.push([8 + i*1.8, 14 + Math.sin(i/40*TAU)*6]); }
-  build(st); drawBrush(g, st, '232,199,126', 1, 1.6, .2, .3, 0, 'rgba(255,250,240,.9)');
+  build(st); drawBrush(g, st, typeof ACC === 'string' ? ACC : '255,79,216', 1, 1.6, .2, .3, 0, 'rgba(255,250,240,.25)');   // previews glow in the interface colour
 }
 function renderBrushGrid(){
   const pop = $('brushPop'); pop.innerHTML = '';
