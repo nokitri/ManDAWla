@@ -1,10 +1,6 @@
 /* ================= Tutorial ================= */
 const TOUR = [
-  ['Draw', 'Drag inside the circle. Every ring is a note: the outside is low, the middle is high. Keys A–L play notes too.'],
-  ['Make a loop', 'Press ● Rec, then ▶ Play. Whatever you draw loops, and each stroke lights up when its notes play.'],
-  ['Tracks', '+ Track adds another instrument with its own look. Drag the track chips to reorder them; Duplicate copies one.'],
-  ['Sound & Visuals', 'The ♪ Sound and ✦ Visuals buttons hold everything for the selected track. 🎲 Surprise Me shuffles them.'],
-  ['Timeline & more', '▤ Timeline opens a note grid. ⚙ Settings has the key, loop, themes, saving and exports.']
+  ['Draw', 'Drag inside the circle. Every ring is a note: the outside is low, the middle is high. Pick a sound, a style and how long your pattern stays below.']
 ];
 let tourI = -1;
 function showTour(i){

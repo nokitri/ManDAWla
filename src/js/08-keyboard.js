@@ -14,7 +14,6 @@ addEventListener('keydown', e => {
   if (!$('help').hidden){ if (e.key === '?' || k === 'escape') $('help').hidden = true; return; }
   if ((e.metaKey||e.ctrlKey) && k==='z'){ e.preventDefault(); e.shiftKey ? redo() : undo(); return; }
   if ((e.metaKey||e.ctrlKey) && k==='y'){ e.preventDefault(); redo(); return; }
-  if ((e.metaKey||e.ctrlKey) && k==='s'){ e.preventDefault(); $('save').click(); toast('Saved project'); return; }
   if ((e.metaKey||e.ctrlKey) && k==='a'){ e.preventDefault(); tlSel = new Set(strokes.filter(st => st.track === S.cur).flatMap(st => st.notes)); syncTlBtns(); toast(tlSel.size + ' notes selected'); return; }
   if ((e.metaKey||e.ctrlKey) && k==='c' && tlSel.size){ e.preventDefault(); copySel(); return; }
   if ((e.metaKey||e.ctrlKey) && k==='v' && tlClip){ e.preventDefault(); pasteClip(); return; }
@@ -36,20 +35,12 @@ addEventListener('keydown', e => {
   if ((e.key === 'Delete' || e.key === 'Backspace') && tlSel.size){ e.preventDefault(); deleteSel(); return; }
   if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
   if (e.key === '?'){ $('help').hidden = false; $('helpClose').focus(); return; }
-  if (k === 't'){ $('tRoll').click(); return; }
-  if (k === 'b'){ $('glide').click(); return; }
-  if (k === 'o'){ $('tRings').click(); return; }
-  if (/^[1-9]$/.test(k)){ const t = S.tracks[+k - 1]; if (t) selectTrack(t.id); return; }
-  if (k === 'n'){ const ks = Object.keys(CHORDS); S.chord = ks[(ks.indexOf(S.chord)+1) % ks.length]; $('chordSel').value = S.chord; updateMeta(); toast('Chord · ' + CHORD_NAMES[S.chord]); return; }
+  if (false && k === 'n'){ const ks = Object.keys(CHORDS); S.chord = ks[(ks.indexOf(S.chord)+1) % ks.length]; $('chordSel').value = S.chord; updateMeta(); toast('Chord · ' + CHORD_NAMES[S.chord]); return; }
   if (k === 'y'){ redo(); return; }
   if (k === '[' || k === ']'){ S.width = Math.max(.25, Math.min(6, S.width + (k === ']' ? .25 : -.25))); $('width').value = S.width; $('widthVal').textContent = S.width; toast('Brush size ' + S.width); return; }
   if (k === '-' || k === '='){ S.sym = Math.max(1, Math.min(16, S.sym + (k === '=' ? 1 : -1))); $('sym').value = S.sym; $('symVal').textContent = S.sym; toast('Symmetry ' + S.sym); return; }
-  if (k === ' '){ e.preventDefault(); if (tag === 'BUTTON') e.target.blur(); $('tPlay').click(); return; }
-  if (k === 'r'){ $('rec').click(); return; }
-  if (k === 'm'){ $('tMetro').click(); return; }
   if (k === 'z'){ undo(); return; }
   if (k === 'c'){ $('tClear').click(); if (clearArmed) toast('Press C again to clear everything'); return; }
-  if (k === 'p'){ $('snap').click(); return; }
   if (k === 'e'){ setTool(tool === 'erase' ? 'draw' : 'erase'); return; }
   if (k === 'v'){ setTool(tool === 'move' ? 'draw' : 'move'); return; }
   const n = 'asdfghjkl'.indexOf(k); if (n < 0) return;
