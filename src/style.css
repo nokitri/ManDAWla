@@ -257,24 +257,18 @@ input[type=range]{accent-color:var(--gold)}
 /* CRT, always on: scanlines, vignette, flicker (screen only: exports render from the canvases) */
 body::after{content:'';position:fixed;inset:0;z-index:10;pointer-events:none;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);
-  animation:crtFlicker .12s infinite}
-@keyframes crtFlicker{0%,100%{opacity:.94}50%{opacity:1}}
+}
 @media (prefers-reduced-motion:reduce){body::after,#rec[aria-pressed="true"],#exportAudio.on,#exportGif.on,#exportVid.on{animation:none}}
 /* ================= Simple mode: just draw, pick a sound and a style, and choose how long patterns stay ================= */
 [data-gone]{display:none!important}
 .simple{flex-wrap:wrap;gap:8px 16px}.simple .field{gap:8px}.simple .swatches.mini .sw i{width:26px;height:16px}
 .head{padding-bottom:2px}
 /* CRT over the mandala: phosphor bloom on the strokes, an RGB aperture mask, a rolling refresh band and a curved-glass vignette */
-canvas#c{filter:brightness(1.12) contrast(1.1) drop-shadow(0 0 5px color-mix(in srgb,var(--gold) 55%,transparent))}
-.crtfx{position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;
-  background:
-    linear-gradient(180deg,transparent 0,rgba(255,255,255,.06) 48%,transparent 52%,transparent 100%) 0 0/100% 300% no-repeat,
-    repeating-linear-gradient(90deg,rgba(255,80,80,.9) 0 1px,rgba(80,255,80,.9) 1px 2px,rgba(80,80,255,.9) 2px 3px),
-    radial-gradient(ellipse at center,#fff 50%,#777 85%,#222 100%);
-  animation:crtRoll 7s linear infinite}
-.crtfx::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px);mix-blend-mode:normal}
-@keyframes crtRoll{from{background-position:0 100%,0 0,0 0}to{background-position:0 -200%,0 0,0 0}}
-@media (prefers-reduced-motion:reduce){.crtfx{animation:none}}
+
+.crtfx{position:fixed;inset:0;pointer-events:none;   /* plain alpha layers, no blend modes or animation: cheap to composite over the live canvas */
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.55) 100%)}
+.crtfx::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.4) 0 1px,transparent 1px 3px)}
+
 /* numnuts-style title card: name with a blinking cursor, and the little face bopping next to it */
 .top .title{display:flex;align-items:baseline;gap:12px;pointer-events:auto;text-transform:none}
 .top .title h1{margin:0;font:400 40px/1 var(--mono);letter-spacing:.08em;color:var(--gold);text-shadow:0 0 8px var(--gold)}

@@ -41,8 +41,6 @@ addEventListener('keydown', e => {
   if (k === '-' || k === '='){ S.sym = Math.max(1, Math.min(16, S.sym + (k === '=' ? 1 : -1))); $('sym').value = S.sym; $('symVal').textContent = S.sym; toast('Symmetry ' + S.sym); return; }
   if (k === 'z'){ undo(); return; }
   if (k === 'c'){ $('tClear').click(); if (clearArmed) toast('Press C again to clear everything'); return; }
-  if (k === 'e'){ setTool(tool === 'erase' ? 'draw' : 'erase'); return; }
-  if (k === 'v'){ setTool(tool === 'move' ? 'draw' : 'move'); return; }
   const n = 'asdfghjkl'.indexOf(k); if (n < 0) return;
   noteOn(k, n + SCALES[S.scale].length, .6, n/8);
 });
