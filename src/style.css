@@ -292,3 +292,10 @@ canvas#c{filter:brightness(1.12) contrast(1.1) drop-shadow(0 0 5px color-mix(in 
 #palette label{display:flex;justify-content:space-between;align-items:center;font-size:17px}
 #phosCustom{width:48px;height:28px;padding:0;border:1px solid var(--gold);background:#000;cursor:pointer}
 button.swatch .ic{display:inline-block;width:.7em;height:.7em;background:var(--gold);color:transparent;overflow:hidden;vertical-align:middle;margin-right:2px}
+/* stroke colours use the same square glowing swatches as the interface colour picker */
+.swatches.mini{gap:6px}
+.swatches.mini .sw{padding:0;border:2px solid transparent;border-radius:0;background:transparent!important;clip-path:none}
+.swatches.mini .sw i{width:24px!important;height:24px!important;border:0;border-radius:0!important;box-shadow:0 0 8px color-mix(in srgb,var(--gold) 45%,transparent)}
+.swatches.mini .sw[aria-pressed=true]{border-color:#fff;outline:0}
+.swatches.mini .sw[aria-pressed=true] i{outline:0}
+.simple .swatches.mini .sw i{width:22px!important;height:22px!important}
