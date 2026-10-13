@@ -3,7 +3,7 @@ const KEY = 'resonance-presets-v2';
 function loadAll(){ try { return JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('resonance-presets-v1')) || []; } catch { return []; } }
 function saveAll(list){ try { localStorage.setItem(KEY, JSON.stringify(list)); return true; } catch { return false; } }
 let presets = loadAll();
-const SAVED_KEYS = ['sym','mirror','fade','brush','width','palette','c1','c2','c3','drift','spread','bright','bg','bgCustom','stars','bgfx','trail',
+const SAVED_KEYS = ['stay','sym','mirror','fade','brush','width','palette','c1','c2','c3','drift','spread','bright','bg','bgCustom','stars','bgfx','trail',
   'kal','spin','viz','react','beatFx','inst','scale','key','tuning','oct','verb','echo','bpm','quant','loop',
   'bars','grid','swing','countIn','holdMode','glide','glideTime','timeline','rings','chord','strum','arp','metro','metroVol','mix','tracks','cur','zones',
   ];
@@ -20,7 +20,7 @@ function snapshot(name){
 }
 function syncUI(){
   $('sym').value = S.sym; $('symVal').textContent = S.sym; setP($('mirror'), S.mirror);
-  $('fade').value = S.fade; $('tZone').value = S.zone || 'all'; syncFx(); setP($('focusBtn'), !!S.focus); $('mirror').textContent = S.mirror ? 'On' : 'Off'; $('tAlpha').value = S.alpha ?? 100; $('tAlphaVal').textContent = (S.alpha ?? 100) + '%'; $('width').value = S.width; $('widthVal').textContent = S.width;
+  $('stay').value = String(S.stay ?? 2); $('fade').value = S.fade; $('tZone').value = S.zone || 'all'; syncFx(); setP($('focusBtn'), !!S.focus); $('mirror').textContent = S.mirror ? 'On' : 'Off'; $('tAlpha').value = S.alpha ?? 100; $('tAlphaVal').textContent = (S.alpha ?? 100) + '%'; $('width').value = S.width; $('widthVal').textContent = S.width;
   $('c1').value = S.c1; $('c2').value = S.c2; $('c3').value = S.c3; $('bgCustom').value = S.bgCustom;
   setP($('drift'), S.drift); $('drift').textContent = S.drift ? 'On' : 'Off'; $('bgfx').value = S.bgfx || (S.stars === false ? 'none' : 'stars'); setP($('beatFx'), S.beatFx);
   $('spread').value = S.spread; $('bright').value = S.bright; $('spreadVal').textContent = S.spread; $('brightVal').textContent = S.bright + '%'; $('trailVal').textContent = S.trail; $('trail').value = S.trail; $('spin').value = S.spin; $('spinVal').textContent = S.spin;
@@ -43,6 +43,7 @@ function applyPreset(p){
   dropSel();
   SAVED_KEYS.forEach(k => { if (p[k] !== undefined) S[k] = (k === 'mix' || k === 'tracks') ? JSON.parse(JSON.stringify(p[k])) : p[k]; });
   if (p.bgfx === undefined) S.bgfx = '';   // saves from before background styles go by their stars flag
+  if (p.stay === undefined) S.stay = 2;   // older saves had no stay length
   S.tracks.forEach(t => { for (const k of ['loopB','duck','pitchCol','stamp','stampImg']) if (t[k] === undefined) t[k] = S_DEFAULTS[k]; });
   let legacyMap = null;
   if (!Array.isArray(p.tracks) || !p.tracks.length){ const lg = tracksFromLegacy(p); S.tracks = lg.tracks; legacyMap = lg.map; S.cur = S.tracks[0].id; }

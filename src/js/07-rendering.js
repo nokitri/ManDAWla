@@ -78,13 +78,14 @@ function drawStrokes(C0, M0, now){
     if (S.focus && tk && tk.id !== S.cur) op *= .12;   // focus: other tracks fade into the background
     const set = (tk && SYMSETS[tk.id]) || { C: C0, M: M0, n: S.sym }, C = set.C, M = set.M, nSym = set.n;
     let life = 1, segs = null; const hs = st.autoFade || (hold > 0 ? hold : 0);
-    // strokes drawn without recording fade away shortly after you lift the pointer
-    if (!st.notes.length && !isActive(st) && !st.autoFade && !st.keyHeld){
+    // strokes fade away S.stay seconds after you lift the pointer (0: they stay for good)
+    if (!st.notes.length && !isActive(st) && !st.autoFade && !st.keyHeld && S.stay !== 0){
       if (st.endT === undefined) st.endT = now;
-      const age = now - st.endT;
-      if (age > 2200){ strokes.splice(si,1); continue; }
-      if (age > 1200) life = 1 - (age - 1200)/1000;
+      const age = now - st.endT, hold = (S.stay ?? 2)*1000 - 1000;
+      if (age > hold + 1000){ strokes.splice(si,1); continue; }
+      if (age > hold) life = 1 - (age - hold)/1000;
     }
+    else if (!st.notes.length && S.stay === 0){}   // forever: a stroke without notes skips any older per-track fade too
     else if (fd < 0 && !st.autoFade && !isActive(st)){
       // fade with notes: a stroke shows after you draw it, then lights up only while its notes sound
       // strokes without notes just stay; with the loop stopped, recorded strokes stay softly visible too

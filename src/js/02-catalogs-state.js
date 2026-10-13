@@ -37,7 +37,7 @@ const SCALES = { penta:[0,2,4,7,9], minpenta:[0,3,5,7,10], hira:[0,2,3,7,8], ins
   harm:[0,2,3,5,7,8,11], raga:[0,1,4,5,7,8,11], arabic:[0,1,4,5,7,8,11], blues:[0,3,5,6,7,10] };
 
 /* ================= State ================= */
-const S = { sym:8, mirror:true, sing:true, draw:true, fade:-1, alpha:100, focus:false, zones:false, zone:'all', afxList:[{ type:'reverb', amt:40 }], vfxList:[], brush:'line', width:1,
+const S = { stay:2, sym:8, mirror:true, sing:true, draw:true, fade:-1, alpha:100, focus:false, zones:false, zone:'all', afxList:[{ type:'reverb', amt:40 }], vfxList:[], brush:'line', width:1,
   palette:'unit01', c1:'#ff5fa2', c2:'#5fd4ff', c3:'#ffe27a', drift:true, spread:50, bright:100,
   bg:'custom', bgCustom:'#000000', stars:true, bgfx:'hex', trail:60,
   kal:'radial', spin:30, viz:'spectrum', react:100, beatFx:true,

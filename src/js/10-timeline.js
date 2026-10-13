@@ -419,26 +419,25 @@ $('tlSteps').onclick = () => { tlSteps = !tlSteps; setP($('tlSteps'), tlSteps); 
 $('tlEuclid').onchange = e => { const v = e.target.value; e.target.value = ''; if (v !== '') euclidFill(+v); };
 $('tlAuto').onchange = e => { tlAuto = e.target.value; lanesAt = 0; if (tlAuto !== 'off') toast((tlAuto === 'vol' ? 'Volume' : 'Filter') + ' automation · drag in the strip under the grid'); };
 /* ---- interface themes (remembered in this browser) ---- */
-const THEMES = {
-  nerv:   { name:'Command Orange', ink:'#0b0805', ink2:'#17110a', acc:'#ff7a00', rose:'#e8322a', aqua:'#58f08a', text:'#ffeacc', muted:'#a88a66' },
-  test:   { name:'Test Type',      ink:'#0d0914', ink2:'#181125', acc:'#9bff3a', rose:'#8f5cff', aqua:'#ff8a1f', text:'#ece4ff', muted:'#9488ad' },
-  proto:  { name:'Prototype',      ink:'#070b12', ink2:'#0f1622', acc:'#5ea8ff', rose:'#ffcc33', aqua:'#dff0ff', text:'#e6eef9', muted:'#8a9ab0' },
-  prod:   { name:'Production',     ink:'#120606', ink2:'#1e0b0b', acc:'#ff3b2f', rose:'#ff9a1f', aqua:'#ffd84a', text:'#ffe6e0', muted:'#ad8580' },
-  magi:   { name:'Supercomputer',  ink:'#030c06', ink2:'#08160c', acc:'#3dff7a', rose:'#ffb000', aqua:'#9dffcf', text:'#d6ffe2', muted:'#6fa583' },
-  blue:   { name:'Pattern Blue',   ink:'#06060f', ink2:'#0e0e1e', acc:'#4f6bff', rose:'#ff2a3c', aqua:'#7fe8ff', text:'#e4e8ff', muted:'#8890b8' },
-  mono:   { name:'Graphite',       ink:'#0d0d0d', ink2:'#191919', acc:'#d6d6d6', rose:'#e0574a', aqua:'#a0d8d0', text:'#f0f0f0', muted:'#999999' }
+const THEMES = {   // numnuts-style single-colour phosphors: everything is one hue on black
+  pink:  { name:'Pink',  ink:'#0a0309', ink2:'#160713', acc:'#ff4fd8', rose:'#ff4fd8', aqua:'#ff4fd8', text:'#ff4fd8', muted:'#a8358f' },
+  amber: { name:'Amber', ink:'#0a0700', ink2:'#161000', acc:'#ffb000', rose:'#ffb000', aqua:'#ffb000', text:'#ffb000', muted:'#a87400' },
+  green: { name:'Green', ink:'#020a04', ink2:'#051609', acc:'#33ff66', rose:'#33ff66', aqua:'#33ff66', text:'#33ff66', muted:'#22a844' },
+  cyan:  { name:'Cyan',  ink:'#02090a', ink2:'#051416', acc:'#3ce6ff', rose:'#3ce6ff', aqua:'#3ce6ff', text:'#3ce6ff', muted:'#2898a8' },
+  red:   { name:'Red',   ink:'#0a0202', ink2:'#160505', acc:'#ff3b30', rose:'#ff3b30', aqua:'#ff3b30', text:'#ff3b30', muted:'#a8271f' },
+  white: { name:'White', ink:'#08090a', ink2:'#121416', acc:'#e8f0ff', rose:'#e8f0ff', aqua:'#e8f0ff', text:'#e8f0ff', muted:'#98a0a8' }
 };
-let theme = 'nerv';
+let theme = 'pink';
 function applyTheme(k){
-  const T = THEMES[k] || THEMES.nerv, st = document.documentElement.style; theme = THEMES[k] ? k : 'nerv';
+  const T = THEMES[k] || THEMES.pink, st = document.documentElement.style; theme = THEMES[k] ? k : 'pink';
   for (const [v, c] of [['--ink', T.ink], ['--ink2', T.ink2], ['--gold', T.acc], ['--rose', T.rose], ['--aqua', T.aqua], ['--text', T.text], ['--muted', T.muted]]) st.setProperty(v, c);
   ACC = hexRGB(T.acc).join(','); st.setProperty('--line', `rgba(${ACC},.3)`); drawStars();   // the hex background is tinted with the accent
   try { localStorage.setItem('mandawla-theme', theme); } catch {}
   const box = $('themeSw'); box.innerHTML = '';
   for (const key in THEMES){ const t = THEMES[key], b = document.createElement('button'); b.className = 'sw round'; b.setAttribute('aria-pressed', key === theme); b.setAttribute('aria-label', t.name); b.dataset.nm = t.name;
-    b.innerHTML = `<i style="background:linear-gradient(135deg,${t.acc} 0 50%,${t.rose} 50% 72%,${t.ink2} 72% 100%)"></i>`; b.onclick = () => applyTheme(key); box.append(b); }
+    b.innerHTML = `<i style="background:${t.acc};box-shadow:0 0 8px ${t.acc}"></i>`; b.onclick = () => applyTheme(key); box.append(b); }
 }
-try { theme = localStorage.getItem('mandawla-theme') || 'nerv'; } catch {}
+try { theme = localStorage.getItem('mandawla-theme') || 'pink'; } catch {}
 applyTheme(theme);
 function setTlFull(on){
   tlFull = on; $('timeline').classList.toggle('full', on); setP($('tlFull'), on); $('tlFull').textContent = on ? '⤡' : '⤢';

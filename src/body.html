@@ -2,30 +2,31 @@
 <canvas id="bgc" aria-hidden="true"></canvas>
 <canvas id="c" aria-label="Symmetry drawing canvas. Drag to draw and play notes."></canvas>
 <canvas id="fx" aria-hidden="true"></canvas>
+<div class="crtfx" aria-hidden="true"></div>
 
 <div class="top">
   <div class="transport">
-    <span class="meta" id="meta">UNTITLED · BELL</span>
-    <button id="tPlay" aria-pressed="false" title="Space">▶ Play</button>
-    <button id="rec" aria-pressed="false" title="R">● Rec</button>
-    <button id="tMetro" aria-pressed="false" title="M">♩ Metronome</button>
-    <button id="tRoll" aria-pressed="false" title="T">▤ Timeline</button>
-    <button id="tRings" aria-pressed="false" title="O">◎ Notes</button>
-    <span class="pos" id="pos" aria-live="off">STOPPED</span>
+    <span class="meta" id="meta" data-gone>UNTITLED · BELL</span>
+    <button id="tPlay" data-gone aria-pressed="false" title="Space">▶ Play</button>
+    <button id="rec" data-gone aria-pressed="false" title="R">● Rec</button>
+    <button id="tMetro" data-gone aria-pressed="false" title="M">♩ Metronome</button>
+    <button id="tRoll" data-gone aria-pressed="false" title="T">▤ Timeline</button>
+    <button id="tRings" data-gone aria-pressed="false" title="O">◎ Notes</button>
+    <span class="pos" id="pos" data-gone aria-live="off">STOPPED</span>
   </div>
   <div class="btns">
     <button id="tUndo" title="Ctrl/Cmd+Z">↶ Undo</button>
-    <button id="tRedo" title="Ctrl/Cmd+Shift+Z">↷ Redo</button>
+    <button id="tRedo" data-gone title="Ctrl/Cmd+Shift+Z">↷ Redo</button>
     <button id="tClear" title="C">✕ Clear</button>
-    <button id="composeBtn">✦ Compose</button>
-    <button id="snap" title="P">▣ Snapshot</button>
+    <button id="composeBtn" data-gone>✦ Compose</button>
+    <button id="snap" data-gone title="P">▣ Snapshot</button>
     <button id="fs">⤢ Fullscreen</button>
-    <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="gsBtn" data-gone aria-expanded="false" aria-controls="side">⚙ Settings</button>
     <button id="helpBtn" title="?">? Help</button>
   </div>
 </div>
 
-<div class="timeline" id="timeline"><div class="tlwrap" id="tlWrap"><canvas id="tl" aria-label="Loop timeline and piano roll. Click to move the playhead; click an instrument name to mute it; in piano roll, click the grid to add a note."></canvas></div><div class="tlgrip" id="tlGrip" role="separator" aria-orientation="horizontal" aria-label="Drag to stretch the timeline taller" title="Drag down to stretch · double-click to toggle pitch view"></div><div class="tlz"><span class="rollopts" id="tlRollOpts" hidden><select id="prLen" aria-label="New note length"><option value="grid">GRID</option><option value=".25">1/16</option><option value=".5" selected>1/8</option><option value="1">1/4</option><option value="2">1/2</option><option value="4">1 BAR</option></select><button id="prSnap" aria-pressed="true">Snap</button><button id="prGhost" aria-pressed="true">Others</button><button id="tlSteps" aria-pressed="true" hidden>Steps</button><select id="tlEuclid" aria-label="Fill the steps evenly" hidden><option value="">FILL ▾</option><option value="0">0 HITS</option><option value="1">1 HITS</option><option value="2">2 HITS</option><option value="3">3 HITS</option><option value="4">4 HITS</option><option value="5">5 HITS</option><option value="6">6 HITS</option><option value="7">7 HITS</option><option value="8">8 HITS</option><option value="9">9 HITS</option><option value="10">10 HITS</option><option value="11">11 HITS</option><option value="12">12 HITS</option><option value="16">16 HITS</option></select><select id="tlAuto" aria-label="Automation lane"><option value="off">AUTOMATE ▾</option><option value="vol">VOLUME</option><option value="cut">FILTER</option></select></span><button id="tlDup" hidden>⧉ Duplicate</button><button id="tlDel" hidden>✕</button><button id="tlOut" aria-label="Zoom out">−</button><button id="tlFit" aria-label="Fit loop">1×</button><button id="tlIn" aria-label="Zoom in">+</button><button id="tlFull" aria-label="Full screen timeline" aria-pressed="false">⤢</button></div></div>
+<div class="timeline" id="timeline" data-gone><div class="tlwrap" id="tlWrap"><canvas id="tl" aria-label="Loop timeline and piano roll. Click to move the playhead; click an instrument name to mute it; in piano roll, click the grid to add a note."></canvas></div><div class="tlgrip" id="tlGrip" role="separator" aria-orientation="horizontal" aria-label="Drag to stretch the timeline taller" title="Drag down to stretch · double-click to toggle pitch view"></div><div class="tlz"><span class="rollopts" id="tlRollOpts" hidden><select id="prLen" aria-label="New note length"><option value="grid">GRID</option><option value=".25">1/16</option><option value=".5" selected>1/8</option><option value="1">1/4</option><option value="2">1/2</option><option value="4">1 BAR</option></select><button id="prSnap" aria-pressed="true">Snap</button><button id="prGhost" aria-pressed="true">Others</button><button id="tlSteps" aria-pressed="true" hidden>Steps</button><select id="tlEuclid" aria-label="Fill the steps evenly" hidden><option value="">FILL ▾</option><option value="0">0 HITS</option><option value="1">1 HITS</option><option value="2">2 HITS</option><option value="3">3 HITS</option><option value="4">4 HITS</option><option value="5">5 HITS</option><option value="6">6 HITS</option><option value="7">7 HITS</option><option value="8">8 HITS</option><option value="9">9 HITS</option><option value="10">10 HITS</option><option value="11">11 HITS</option><option value="12">12 HITS</option><option value="16">16 HITS</option></select><select id="tlAuto" aria-label="Automation lane"><option value="off">AUTOMATE ▾</option><option value="vol">VOLUME</option><option value="cut">FILTER</option></select></span><button id="tlDup" hidden>⧉ Duplicate</button><button id="tlDel" hidden>✕</button><button id="tlOut" aria-label="Zoom out">−</button><button id="tlFit" aria-label="Fit loop">1×</button><button id="tlIn" aria-label="Zoom in">+</button><button id="tlFull" aria-label="Full screen timeline" aria-pressed="false">⤢</button></div></div>
 <div class="tools" id="tools" role="toolbar" aria-label="Drawing tools"><button id="toolDraw" aria-pressed="true" aria-label="Draw">✎</button><button id="toolErase" aria-pressed="false" aria-label="Eraser">⌫</button><button id="toolMove" aria-pressed="false" aria-label="Move">✥</button></div>
 <div class="dpanel cpop" id="composePop" role="dialog" aria-label="Compose for me" hidden>
   <div class="ptop"><span class="ttl">✦ Compose For Me</span></div>
@@ -52,66 +53,41 @@
   <div class="card" role="dialog" aria-label="Keyboard shortcuts">
     <h2>Shortcuts</h2>
     <dl>
-      <dt><kbd>Space</kbd></dt><dd>Play / stop the loop</dd>
-      <dt><kbd>R</kbd></dt><dd>Record while drawing on / off</dd>
-      <dt><kbd>M</kbd></dt><dd>Metronome</dd>
-      <dt><kbd>T</kbd></dt><dd>Show / hide the timeline</dd>
-      <dt><kbd>B</kbd></dt><dd>Glide notes on / off</dd>
-      <dt><kbd>O</kbd></dt><dd>Notes overlay</dd>
-      <dt><kbd>N</kbd></dt><dd>Next chord type</dd>
-      <dt><kbd>1</kbd>–<kbd>9</kbd></dt><dd>Select a track</dd>
-      <dt><kbd>A</kbd>–<kbd>L</kbd></dt><dd>Play the scale (hold to sustain); while recording, each key is saved as a note</dd>
+      <dt>Drag</dt><dd>Draw and play notes: the outside of the circle is low, the middle is high</dd>
+      <dt><kbd>A</kbd>–<kbd>L</kbd></dt><dd>Play the scale (hold to sustain)</dd>
       <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Brush size</dd>
       <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd>Symmetry</dd>
       <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd>Undo</dd>
-      <dt><kbd>Ctrl/Cmd+Shift+Z</kbd> · <kbd>Y</kbd></dt><dd>Redo</dd>
-      <dt><kbd>Ctrl/Cmd+S</kbd></dt><dd>Save project</dd>
       <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd>Clear the drawing (press twice; undo brings it back)</dd>
-      <dt><kbd>P</kbd></dt><dd>Snapshot</dd>
       <dt><kbd>E</kbd> · <kbd>V</kbd></dt><dd>Eraser · move strokes (press again or Esc to draw)</dd>
-      <dt><kbd>Esc</kbd></dt><dd>Close settings, or hide / show the bottom menu</dd>
+      <dt><kbd>Esc</kbd></dt><dd>Hide / show the bottom menu</dd>
       <dt><kbd>?</kbd></dt><dd>This list</dd>
     </dl>
-    <h2>Timeline</h2>
-    <dl>
-      <dt>Click / drag the ruler</dt><dd>Move the playhead (while stopped, Play starts there)</dd>
-      <dt>Drag across empty space</dt><dd>Select the notes inside the box</dd>
-      <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Nudge selected notes one grid step (Shift: one beat)</dd>
-      <dt>Drag a note</dt><dd>Move it in time (snaps to the grid)</dd>
-      <dt>Drag a note's right edge</dt><dd>Make it longer or shorter</dd>
-      <dt>Double-click a note</dt><dd>Delete it</dd>
-      <dt>Shift+click notes</dt><dd>Select several</dd>
-      <dt>Alt/Option+drag</dt><dd>Drag a copy</dd>
-      <dt><kbd>Ctrl/Cmd+C</kbd> <kbd>V</kbd></dt><dd>Copy / paste selected notes (pastes at the playhead)</dd>
-      <dt><kbd>Ctrl/Cmd+D</kbd></dt><dd>Duplicate right after</dd>
-      <dt><kbd>Delete</kbd></dt><dd>Delete selected notes</dd>
-      <dt><kbd>Ctrl/Cmd+A</kbd></dt><dd>Select every note on this track</dd>
-      <dt>+ / − · Ctrl+scroll · pinch</dt><dd>Zoom in / out; scroll to move along</dd>
-      <dt>Click a name</dt><dd>Mute that instrument (Shift+click to solo)</dd>
-      <dt>Drag the bottom edge down</dt><dd>Stretch the timeline taller; tall lanes show each note at its pitch (double-click the edge to toggle)</dd>
-      <dt>Timeline button</dt><dd>Opens the selected track's lane into a note grid right in the timeline: click to add a note (drag right to lengthen), right-click or double-click to delete, click a key to hear it. Pick another track's name to edit it instead</dd>
-      <dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>Move selected notes up / down one scale step (Shift: an octave)</dd>
-      <dt>Drag a note up / down</dt><dd>In the tall view or piano roll: change its pitch one scale step at a time</dd>
-    </dl>
-    <div class="row"><button id="tourStart">▶ Tutorial</button><button id="helpClose">Close</button></div>
+    <div class="row"><button id="tourStart" data-gone>▶ Tutorial</button><button id="helpClose">Close</button></div>
   </div>
 </div>
 
 <div class="deck" id="deck">
   <div class="head">
+    <div class="drow simple">
+      <div class="field"><span class="lbl">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
+      <div class="field"><span class="lbl">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
+      <div class="field palf"><span class="lbl">Colors</span><div class="swatches mini" id="palSw"></div></div>
+      <div class="field"><label class="lbl" for="stay">Stays</label><select id="stay"><option value="1">1 S</option><option value="2" selected>2 S</option><option value="5">5 S</option><option value="10">10 S</option><option value="30">30 S</option><option value="0">FOREVER</option></select></div>
+      <div class="sright"><button id="hideDeck" title="Esc">▾ Hide</button></div>
+    </div>
     <!-- 1 · which track you're drawing on -->
-    <div class="drow">
+    <div class="drow" data-gone>
       <span class="sh">Tracks</span>
       <div class="tracks" id="trackChips" role="group" aria-label="Tracks"></div>
       <button id="addTrack">+ Track</button>
       <div class="sright">
         <div class="meters" aria-hidden="true"><i id="mb"></i><i id="mm"></i><i id="mh"></i><i id="mbeat" class="beat"></i></div>
         <button id="focusBtn" aria-pressed="false">◐ Focus</button>
-        <button id="hideDeck" title="Esc">▾ Hide</button>
-      </div>
+        </div>
     </div>
     <!-- 2 · this track: sound and brush, then pop-ups for everything else, then the level -->
-    <div class="drow quick">
+    <div class="drow quick" data-gone>
       <input id="tName" type="text" maxlength="18" placeholder="Track name" aria-label="Track name">
       <span class="qsep"></span>
       <div class="ptabs" role="group" aria-label="Track settings"><button class="ptab" id="tabNotes" data-p="dp-play" aria-haspopup="true" aria-expanded="false">♪ Sound <span class="car">▴</span></button><button class="ptab" id="tabLook" data-p="dp-brush" aria-haspopup="true" aria-expanded="false">✦ Visuals <span class="car">▴</span></button></div>
@@ -128,8 +104,7 @@
   <div class="dpanel tgrid" role="dialog" id="dp-play" hidden>
     <div class="ptop"><span class="ttl">♪ Sound</span><button id="surpriseSound" class="surp">🎲 Surprise Me</button></div>
     <div class="grp"><div class="gh">Instrument</div>
-      <div class="field"><span class="lbl">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
-      <div class="field"><label class="lbl" for="oct">Octave</label><input id="oct" type="range" min="-2" max="2" value="0"><span class="val" id="octVal">0</span></div>
+            <div class="field"><label class="lbl" for="oct">Octave</label><input id="oct" type="range" min="-2" max="2" value="0"><span class="val" id="octVal">0</span></div>
     </div>
     <div class="grp"><div class="gh">Pitch</div>
       <div class="field"><label class="lbl" for="chordSel">Chord</label><select id="chordSel">
@@ -158,8 +133,7 @@
   <div class="dpanel tgrid" role="dialog" id="dp-brush" hidden>
     <div class="ptop"><span class="ttl">✦ Visuals</span><button id="surpriseLook" class="surp">🎲 Surprise Me</button></div>
     <div class="grp"><div class="gh">Line</div>
-      <div class="field"><span class="lbl">Brush</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
-      <div class="field" id="stampRow" hidden><label class="lbl" for="stampTxt">Stamp</label><div class="stampc"><input id="stampTxt" type="text" maxlength="4" value="✿" aria-label="Stamp text or emoji"><button id="stampUp">Image…</button><button id="stampClr" hidden>✕</button><input id="stampFile" type="file" accept="image/*" hidden></div></div>
+            <div class="field" id="stampRow" hidden><label class="lbl" for="stampTxt">Stamp</label><div class="stampc"><input id="stampTxt" type="text" maxlength="4" value="✿" aria-label="Stamp text or emoji"><button id="stampUp">Image…</button><button id="stampClr" hidden>✕</button><input id="stampFile" type="file" accept="image/*" hidden></div></div>
       <div class="field"><label class="lbl" for="width">Size</label><input id="width" type="range" min=".25" max="6" value="1" step=".25"><span class="val" id="widthVal">1</span></div>
       <div class="field"><label class="lbl" for="tAlpha">Opacity</label><input id="tAlpha" type="range" min="5" max="100" value="100"><span class="val" id="tAlphaVal">100%</span></div>
     </div>
@@ -171,8 +145,7 @@
       <div class="field"><label class="lbl" for="trail">Trails</label><input id="trail" type="range" min="0" max="100" value="60"><span class="val" id="trailVal">60</span></div>
     </div>
     <div class="grp"><div class="gh">Palette</div>
-      <div class="field palf"><span class="lbl">Colors</span><div class="swatches mini" id="palSw"></div></div>
-      <div class="field"><span class="lbl">By Pitch</span><button id="pitchCol" aria-pressed="false">Off</button></div>
+            <div class="field"><span class="lbl">By Pitch</span><button id="pitchCol" aria-pressed="false">Off</button></div>
       <div class="row" id="customRow" hidden>
         <div class="field"><label class="lbl" for="c1">From</label><input id="c1" type="color" value="#ff5fa2"></div>
         <div class="field"><label class="lbl" for="c2">To</label><input id="c2" type="color" value="#5fd4ff"></div>
