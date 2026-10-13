@@ -302,7 +302,7 @@ function frame(now){
   if (frameN % 12 === 0){ ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0,0,W,H); }   // clears the faint residue a slow fade leaves behind
 
   ctx.save(); ctx.translate(W/2, CY()); ctx.globalCompositeOperation = LIGHT ? 'source-over' : 'screen';   // screen, not lighter: overlaps glow without burning to white
-  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.clip(); ctx.rotate(rot);
+  ctx.save(); ctx.rotate(rot);   // no circular clip: strokes fill the whole screen
   if (!li){
   C = copies(now); M = copyMatrices(C);
   SYMSETS = { [S.kal + '|' + S.sym + '|' + (S.mirror ? 1 : 0)]: { C, M, n: S.sym } };
@@ -337,14 +337,7 @@ function frame(now){
     }
   }
   ctx.rotate(-rot*.6);
-  { const ink = LIGHT ? '30,28,38' : ACC, a = .24 + bass*.16*re;   // the edge of the playable circle, drawn as a targeting reticle
-    ctx.strokeStyle = `rgba(${ink},${a})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.stroke();
-    ctx.beginPath(); for (let k=0;k<72;k++){ const t = k/72*TAU, l = k % 6 ? 4 : 9, c = Math.cos(t), s = Math.sin(t); ctx.moveTo(c*R*1.01, s*R*1.01); ctx.lineTo(c*(R*1.01 + l), s*(R*1.01 + l)); } ctx.stroke();
-    ctx.lineWidth = 2; ctx.strokeStyle = `rgba(${ink},${Math.min(1, a*2.6)})`;
-    for (let k=0;k<4;k++){ const t = k*TAU/4 + Math.PI/4; ctx.beginPath(); ctx.arc(0, 0, R*1.06, t - .07, t + .07); ctx.stroke(); }   // four corner brackets
-    ctx.lineWidth = 1; ctx.strokeStyle = `rgba(${ink},${a*.7})`; ctx.beginPath(); const q = R*.06;   // centre crosshair
-    ctx.moveTo(-q, 0); ctx.lineTo(-q*.35, 0); ctx.moveTo(q*.35, 0); ctx.lineTo(q, 0); ctx.moveTo(0, -q); ctx.lineTo(0, -q*.35); ctx.moveTo(0, q*.35); ctx.lineTo(0, q); ctx.stroke(); }
-  drawViz(R, now, dt);
+  // no reticle or visualizer ring: the field is open edge to edge
   ctx.restore();
 
   if (ripples.length){

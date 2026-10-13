@@ -3,6 +3,7 @@ const strokes = [], active = new Map(), sparks = [], ripples = [], pulses = [];
 let rot = 0, ANG = {}, lastNote = 0, lastIdx = -1, tunnelPhase = 0, colorShift = 0, frameNow = 0;
 const CY = () => H/2 - Math.min(30, H*.03);
 const maxR = () => Math.min(W,H)*.46;
+const fieldR = () => Math.hypot(W, H)*.5;   // the whole screen is drawable, out to the corners
 function toLocal(x, y){
   let dx = x - W/2, dy = y - CY();
   if (D3){ const p = D3_P, a = D3_TILT*Math.PI/180, v = dy*p/(p*Math.cos(a) + dy*Math.sin(a)); dx *= (p - v*Math.sin(a))/p; dy = v; }   // undo the 3D tilt
@@ -10,7 +11,7 @@ function toLocal(x, y){
   return [dx*c - dy*s, dx*s + dy*c];
 }
 function idxAt(lx, ly){
-  const n = SCALES[S.scale].length * 3, d = Math.min(1, Math.hypot(lx,ly)/maxR());
+  const n = SCALES[S.scale].length * 3, d = Math.min(1, Math.hypot(lx,ly)/fieldR());   // pitch spans the whole screen: corners low, centre high
   return Math.max(0, Math.min(n-1, Math.floor((1-d)*n)));
 }
 let strokeCount = 0;
@@ -23,7 +24,7 @@ function addPoint(st, lx, ly, now, silent){
   const p = st.pts, last = p[p.length-1];
   if (p.length > 900) return;
   if (last && Math.hypot(lx-last[0], ly-last[1]) < 3) return;
-  if (Math.hypot(lx, ly) > maxR()) return;
+  if (Math.hypot(lx, ly) > fieldR()*1.5) return;
   p.push([lx, ly]); st.born = now; st.dirty = true;
   st.movedAt = now;
   if (silent || !S.sing) return;
@@ -162,7 +163,7 @@ cv.addEventListener('pointerdown', e => {
   startStroke(e.pointerId, e.clientX, e.clientY);
 });
 const waiting = new Set();
-const outside = (x, y) => { const [lx, ly] = toLocal(x, y); return Math.hypot(lx, ly) > maxR(); };
+const outside = () => false;   // no circle limit: draw anywhere
 function startStroke(id, x, y){
   pushHistory();
   const st = newStroke(); strokes.push(st); active.set(id, st);
