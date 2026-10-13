@@ -5,7 +5,8 @@
 <div class="crtfx" aria-hidden="true"></div>
 
 <div class="top">
-  <div class="transport">
+  <header class="title"><h1>mandawla</h1><span class="logo" aria-hidden="true">✌︎('ω')✌︎</span></header>
+  <div class="transport" data-gone>
     <span class="meta" id="meta" data-gone>UNTITLED · BELL</span>
     <button id="tPlay" data-gone aria-pressed="false" title="Space">▶ Play</button>
     <button id="rec" data-gone aria-pressed="false" title="R">● Rec</button>
@@ -21,7 +22,9 @@
     <button id="composeBtn" data-gone>✦ Compose</button>
     <button id="snap" data-gone title="P">▣ Snapshot</button>
     <button id="fs">⤢ Fullscreen</button>
-    <button id="gsBtn" data-gone aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
+    <button id="langBtn" title="L">◍ EN</button>
+    <span class="pop"><button id="colorBtn" class="swatch" aria-haspopup="true" aria-expanded="false" title="K">▣ Color</button><div id="palette" class="dpanel" hidden><div id="phos"></div><label><span data-i18n="Custom">Custom</span> <input id="phosCustom" type="color" value="#ff4fd8"></label></div></span>
     <button id="helpBtn" title="?">? Help</button>
   </div>
 </div>
@@ -31,7 +34,7 @@
 <div class="dpanel cpop" id="composePop" role="dialog" aria-label="Compose for me" hidden>
   <div class="ptop"><span class="ttl">✦ Compose For Me</span></div>
   <div class="grp">
-    <div class="field"><span class="lbl">Style</span><div class="seg" id="cStyle"><button data-v="calm">Calm</button><button data-v="groovy">Groovy</button><button data-v="bright">Bright</button><button data-v="dark">Dark</button></div></div>
+    <div class="field"><span class="lbl" data-i18n="Style">Style</span><div class="seg" id="cStyle"><button data-v="calm">Calm</button><button data-v="groovy">Groovy</button><button data-v="bright">Bright</button><button data-v="dark">Dark</button></div></div>
     <div class="field"><label class="lbl" for="cTracks">Tracks</label><input id="cTracks" type="range" min="1" max="8" value="4"><span class="val" id="cTracksVal">4</span></div>
     <div class="field"><span class="lbl">Drums</span><button id="cDrums" aria-pressed="true">On</button></div>
     <div class="field"><label class="lbl" for="cBars">Length</label><select id="cBars"><option value="1">1 BAR</option><option value="2">2 BARS</option><option value="4" selected>4 BARS</option><option value="8">8 BARS</option></select></div>
@@ -51,30 +54,30 @@
 </div>
 <div class="help" id="help" hidden>
   <div class="card" role="dialog" aria-label="Keyboard shortcuts">
-    <h2>Shortcuts</h2>
+    <h2 data-i18n="Shortcuts">Shortcuts</h2>
     <dl>
-      <dt>Drag</dt><dd>Draw and play notes: the outside of the circle is low, the middle is high</dd>
-      <dt><kbd>A</kbd>–<kbd>L</kbd></dt><dd>Play the scale (hold to sustain)</dd>
-      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Brush size</dd>
-      <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd>Symmetry</dd>
-      <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd>Undo</dd>
-      <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd>Clear the drawing (press twice; undo brings it back)</dd>
-      <dt><kbd>E</kbd> · <kbd>V</kbd></dt><dd>Eraser · move strokes (press again or Esc to draw)</dd>
-      <dt><kbd>Esc</kbd></dt><dd>Hide / show the bottom menu</dd>
-      <dt><kbd>?</kbd></dt><dd>This list</dd>
+      <dt data-i18n="Drag">Drag</dt><dd data-i18n="Draw and play notes: the outside of the circle is low, the middle is high">Draw and play notes: the outside of the circle is low, the middle is high</dd>
+      <dt><kbd>A</kbd>–<kbd>L</kbd></dt><dd data-i18n="Play the scale (hold to sustain)">Play the scale (hold to sustain)</dd>
+      <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd data-i18n="Brush size">Brush size</dd>
+      <dt><kbd>-</kbd> <kbd>=</kbd></dt><dd data-i18n="Symmetry">Symmetry</dd>
+      <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd data-i18n="Undo">Undo</dd>
+      <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd data-i18n="Clear the drawing (press twice; undo brings it back)">Clear the drawing (press twice; undo brings it back)</dd>
+      <dt><kbd>E</kbd> · <kbd>V</kbd></dt><dd data-i18n="Eraser · move strokes (press again or Esc to draw)">Eraser · move strokes (press again or Esc to draw)</dd>
+      <dt><kbd>Esc</kbd></dt><dd data-i18n="Hide / show the bottom menu">Hide / show the bottom menu</dd>
+      <dt><kbd>?</kbd></dt><dd data-i18n="This list">This list</dd>
     </dl>
-    <div class="row"><button id="tourStart" data-gone>▶ Tutorial</button><button id="helpClose">Close</button></div>
+    <div class="row"><button id="tourStart" data-gone>▶ Tutorial</button><button id="helpClose" data-i18n="Close">Close</button></div>
   </div>
 </div>
 
 <div class="deck" id="deck">
   <div class="head">
     <div class="drow simple">
-      <div class="field"><span class="lbl">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
-      <div class="field"><span class="lbl">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
-      <div class="field palf"><span class="lbl">Colors</span><div class="swatches mini" id="palSw"></div></div>
-      <div class="field"><label class="lbl" for="stay">Stays</label><select id="stay"><option value="1">1 S</option><option value="2" selected>2 S</option><option value="5">5 S</option><option value="10">10 S</option><option value="30">30 S</option><option value="0">FOREVER</option></select></div>
-      <div class="sright"><button id="hideDeck" title="Esc">▾ Hide</button></div>
+      <div class="field"><span class="lbl" data-i18n="Sound">Sound</span><button id="instBtn" class="instBtn" aria-haspopup="true" aria-expanded="false"><span id="instName">BELL</span><span class="car">▾</span></button><select id="instSel" hidden aria-hidden="true"></select><input id="sampleFile" type="file" accept="audio/*" hidden></div>
+      <div class="field"><span class="lbl" data-i18n="Style">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
+      <div class="field palf"><span class="lbl" data-i18n="Colors">Colors</span><div class="swatches mini" id="palSw"></div></div>
+      <div class="field"><label class="lbl" for="stay" data-i18n="Stays">Stays</label><select id="stay"><option value="1">1 S</option><option value="2" selected>2 S</option><option value="5">5 S</option><option value="10">10 S</option><option value="30">30 S</option><option value="0" data-i18n="Forever">FOREVER</option></select></div>
+      <div class="sright"><button id="hideDeck" title="Esc" data-i18n="▾ Hide">▾ Hide</button></div>
     </div>
     <!-- 1 · which track you're drawing on -->
     <div class="drow" data-gone>
@@ -87,13 +90,12 @@
         </div>
     </div>
     <!-- 2 · this track: sound and brush, then pop-ups for everything else, then the level -->
-    <div class="drow quick" data-gone>
-      <input id="tName" type="text" maxlength="18" placeholder="Track name" aria-label="Track name">
+    <div class="drow quick">
+      <input id="tName" data-gone type="text" maxlength="18" placeholder="Track name" aria-label="Track name">
+      <div class="ptabs" role="group" aria-label="Track settings"><button class="ptab" id="tabNotes" data-p="dp-play" aria-haspopup="true" aria-expanded="false"><span data-i18n="♪ Sound">♪ Sound</span> <span class="car">▴</span></button><button class="ptab" id="tabLook" data-p="dp-brush" aria-haspopup="true" aria-expanded="false"><span data-i18n="✦ Visuals">✦ Visuals</span> <span class="car">▴</span></button></div>
       <span class="qsep"></span>
-      <div class="ptabs" role="group" aria-label="Track settings"><button class="ptab" id="tabNotes" data-p="dp-play" aria-haspopup="true" aria-expanded="false">♪ Sound <span class="car">▴</span></button><button class="ptab" id="tabLook" data-p="dp-brush" aria-haspopup="true" aria-expanded="false">✦ Visuals <span class="car">▴</span></button></div>
-      <span class="qsep"></span>
-      <div class="field"><label class="lbl" for="tvol">Vol</label><input id="tvol" type="range" min="0" max="120" value="80"><span class="val" id="tvolVal">80</span></div>
-      <div class="ms"><button id="tMute" aria-pressed="false">Mute</button><button id="tSolo" aria-pressed="false">Solo</button><button id="tDup">Duplicate</button><button id="tClrNotes">Clear Notes</button><button id="tDel">Delete Track</button></div>
+      <div class="field"><label class="lbl" for="tvol" data-i18n="Vol">Vol</label><input id="tvol" type="range" min="0" max="120" value="80"><span class="val" id="tvolVal">80</span></div>
+      <div class="ms" data-gone><button id="tMute" aria-pressed="false">Mute</button><button id="tSolo" aria-pressed="false">Solo</button><button id="tDup">Duplicate</button><button id="tClrNotes">Clear Notes</button><button id="tDel">Delete Track</button></div>
     </div>
   </div>
 </div>
@@ -117,8 +119,8 @@
     <div class="grp"><div class="gh">Rhythm</div>
       <div class="field"><label class="lbl" for="arpSel">Arpeggiator</label><select id="arpSel"><option value="off">OFF</option><option value="up">UP</option><option value="down">DOWN</option><option value="updown">UP &amp; DOWN</option><option value="random">RANDOM</option></select></div>
       <div class="field"><label class="lbl" for="holdSel">When Held</label><select id="holdSel"><option value="sustain">SUSTAIN NOTE</option><option value="repeat">REPEAT NOTE</option></select></div>
-      <div class="field"><label class="lbl" for="loopB">Loop Length</label><select id="loopB"><option value="0">FULL LOOP</option><option value="2">2 BEATS</option><option value="3">3 BEATS</option><option value="4">4 BEATS</option><option value="5">5 BEATS</option><option value="6">6 BEATS</option><option value="7">7 BEATS</option><option value="8">8 BEATS</option><option value="12">12 BEATS</option><option value="16">16 BEATS</option></select></div>
-      <div class="field"><label class="lbl" for="duck">Duck On Kick</label><input id="duck" type="range" min="0" max="100" value="0"><span class="val" id="duckVal">0</span></div>
+      <div class="field" data-gone><label class="lbl" for="loopB">Loop Length</label><select id="loopB"><option value="0">FULL LOOP</option><option value="2">2 BEATS</option><option value="3">3 BEATS</option><option value="4">4 BEATS</option><option value="5">5 BEATS</option><option value="6">6 BEATS</option><option value="7">7 BEATS</option><option value="8">8 BEATS</option><option value="12">12 BEATS</option><option value="16">16 BEATS</option></select></div>
+      <div class="field" data-gone><label class="lbl" for="duck">Duck On Kick</label><input id="duck" type="range" min="0" max="100" value="0"><span class="val" id="duckVal">0</span></div>
     </div>
     <div class="grp"><div class="gh">Slide</div>
       <div class="field"><span class="lbl">Glide</span><button id="glide" aria-pressed="false" title="B">Off</button></div>
@@ -137,7 +139,7 @@
       <div class="field"><label class="lbl" for="width">Size</label><input id="width" type="range" min=".25" max="6" value="1" step=".25"><span class="val" id="widthVal">1</span></div>
       <div class="field"><label class="lbl" for="tAlpha">Opacity</label><input id="tAlpha" type="range" min="5" max="100" value="100"><span class="val" id="tAlphaVal">100%</span></div>
     </div>
-    <div class="grp"><div class="gh">Fading</div>
+    <div class="grp" data-gone><div class="gh">Fading</div>
       <div class="field"><label class="lbl" for="fade">Disappear</label><select id="fade"><option value="-1" selected>WITH NOTES</option>
           <option value="3">AFTER 3 S</option><option value="6">AFTER 6 S</option><option value="10">AFTER 10 S</option>
           <option value="20">AFTER 20 S</option><option value="40">AFTER 40 S</option><option value="0">NEVER</option>
@@ -178,7 +180,7 @@
   <div class="tabs" role="tablist" aria-label="Settings">
     <button role="tab" id="t-modes" aria-controls="p-modes" aria-selected="true">Visuals</button>
     <button role="tab" id="t-sound" aria-controls="p-sound" aria-selected="false">Key</button>
-    <button role="tab" id="t-loop" aria-controls="p-loop" aria-selected="false">Loop</button>
+    <button role="tab" data-gone id="t-loop" aria-controls="p-loop" aria-selected="false">Loop</button>
     <button role="tab" id="t-proj" aria-controls="p-presets" aria-selected="false">Save / Load</button>
   </div>
   <!-- MODES -->
@@ -194,12 +196,12 @@
       <div class="field"><label class="lbl" for="react">Reactivity</label><input id="react" type="range" min="0" max="200" value="100"><span class="val" id="reactVal">100%</span></div>
       <button id="beatFx" aria-pressed="true">Beat Flashes</button>
     </div>
-    <div class="sec">Interface</div>
-    <div class="swatches" id="themeSw" role="group" aria-label="Interface theme"></div>
+    <div class="sec" data-gone>Interface</div>
+    <div class="swatches" data-gone id="themeSw" role="group" aria-label="Interface theme"></div>
     <div class="sec">Background</div>
     <div class="row">
       <div class="field"><label class="lbl" for="bgCustom">Color</label><input id="bgCustom" type="color" value="#000000"></div>
-      <div class="field"><label class="lbl" for="bgfx">Style</label><select id="bgfx"><option value="none">PLAIN</option><option value="stars">STARS</option><option value="twinkle">TWINKLING STARS</option><option value="warp">WARP SPEED</option><option value="dust">FLOATING DUST</option><option value="nebula">NEBULA</option><option value="aurora">AURORA</option><option value="geometry">SACRED GRID</option><option value="hex">HEX FIELD</option><option value="rings">PULSE RINGS</option></select></div>
+      <div class="field"><label class="lbl" for="bgfx" data-i18n="Style">Style</label><select id="bgfx"><option value="none">PLAIN</option><option value="stars">STARS</option><option value="twinkle">TWINKLING STARS</option><option value="warp">WARP SPEED</option><option value="dust">FLOATING DUST</option><option value="nebula">NEBULA</option><option value="aurora">AURORA</option><option value="geometry">SACRED GRID</option><option value="hex">HEX FIELD</option><option value="rings">PULSE RINGS</option></select></div>
     </div>
   </div>
 
@@ -269,9 +271,9 @@
     <div class="row">
       <button id="exportVid">● Export Video</button>
       <button id="exportImg">▣ Save Image</button>
-      <button id="exportGif">◎ Looping GIF</button>
-      <button id="exportAudio">♫ Audio + Stems</button>
-      <button id="exportMidi">⬇ MIDI</button>
+      <button id="exportGif" data-gone>◎ Looping GIF</button>
+      <button id="exportAudio" data-gone>♫ Audio + Stems</button>
+      <button id="exportMidi" data-gone>⬇ MIDI</button>
     </div>
     <textarea id="codeIn" aria-label="Paste a share code" placeholder="PASTE A SHARE CODE HERE…"></textarea>
     <div class="row"><button id="importCode">Load Code</button><span class="status" id="status" role="status"></span></div>

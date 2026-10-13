@@ -6,8 +6,8 @@ let tourI = -1;
 function showTour(i){
   tourI = i;
   if (i < 0 || i >= TOUR.length){ $('tour').hidden = true; try { localStorage.setItem('mandawla-tour', '1'); } catch {} return; }
-  $('tour').hidden = false; $('tourStep').textContent = 'STEP ' + (i + 1) + ' OF ' + TOUR.length; $('tourTitle').textContent = TOUR[i][0]; $('tourBody').textContent = TOUR[i][1];
-  $('tourNext').textContent = i === TOUR.length - 1 ? 'Done' : 'Next';
+  $('tour').hidden = false; $('tourStep').textContent = (i + 1) + ' / ' + TOUR.length; $('tourTitle').textContent = i18n(TOUR[i][0]); $('tourBody').textContent = i18n(TOUR[i][1]);
+  $('tourNext').textContent = i18n(i === TOUR.length - 1 ? 'Done' : 'Next'); $('tourSkip').textContent = i18n('Skip');
 }
 $('tourNext').onclick = () => showTour(tourI + 1); $('tourSkip').onclick = () => showTour(-1);
 $('tourStart').onclick = () => { $('help').hidden = true; showTour(0); };

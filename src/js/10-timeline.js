@@ -419,14 +419,11 @@ $('tlSteps').onclick = () => { tlSteps = !tlSteps; setP($('tlSteps'), tlSteps); 
 $('tlEuclid').onchange = e => { const v = e.target.value; e.target.value = ''; if (v !== '') euclidFill(+v); };
 $('tlAuto').onchange = e => { tlAuto = e.target.value; lanesAt = 0; if (tlAuto !== 'off') toast((tlAuto === 'vol' ? 'Volume' : 'Filter') + ' automation · drag in the strip under the grid'); };
 /* ---- interface themes (remembered in this browser) ---- */
-const THEMES = {   // numnuts-style single-colour phosphors: everything is one hue on black
-  pink:  { name:'Pink',  ink:'#0a0309', ink2:'#160713', acc:'#ff4fd8', rose:'#ff4fd8', aqua:'#ff4fd8', text:'#ff4fd8', muted:'#a8358f' },
-  amber: { name:'Amber', ink:'#0a0700', ink2:'#161000', acc:'#ffb000', rose:'#ffb000', aqua:'#ffb000', text:'#ffb000', muted:'#a87400' },
-  green: { name:'Green', ink:'#020a04', ink2:'#051609', acc:'#33ff66', rose:'#33ff66', aqua:'#33ff66', text:'#33ff66', muted:'#22a844' },
-  cyan:  { name:'Cyan',  ink:'#02090a', ink2:'#051416', acc:'#3ce6ff', rose:'#3ce6ff', aqua:'#3ce6ff', text:'#3ce6ff', muted:'#2898a8' },
-  red:   { name:'Red',   ink:'#0a0202', ink2:'#160505', acc:'#ff3b30', rose:'#ff3b30', aqua:'#ff3b30', text:'#ff3b30', muted:'#a8271f' },
-  white: { name:'White', ink:'#08090a', ink2:'#121416', acc:'#e8f0ff', rose:'#e8f0ff', aqua:'#e8f0ff', text:'#e8f0ff', muted:'#98a0a8' }
-};
+// numnuts-style single-colour phosphors: everything is one hue on black; the dark panels and dim text are mixed from it
+function phosphor(name, hex){ const [r,g,b] = hexRGB(hex), mix = k => '#' + [r,g,b].map(v => Math.round(v*k).toString(16).padStart(2,'0')).join('');
+  return { name, ink: mix(.04), ink2: mix(.085), acc: hex, rose: hex, aqua: hex, text: hex, muted: mix(.62) }; }
+const THEMES = { pink: phosphor('Pink','#ff4fd8'), amber: phosphor('Amber','#ffb000'), green: phosphor('Green','#33ff66'), cyan: phosphor('Cyan','#3ce6ff'), red: phosphor('Red','#ff3b30'), white: phosphor('White','#e8f0ff') };
+try { const c = localStorage.getItem('mandawla-custom'); if (/^#[0-9a-f]{6}$/i.test(c || '')) THEMES.custom = phosphor('Custom', c); } catch {}
 let theme = 'pink';
 function applyTheme(k){
   const T = THEMES[k] || THEMES.pink, st = document.documentElement.style; theme = THEMES[k] ? k : 'pink';

@@ -275,3 +275,27 @@ canvas#c{filter:brightness(1.12) contrast(1.1) drop-shadow(0 0 5px color-mix(in 
 .crtfx::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px);mix-blend-mode:normal}
 @keyframes crtRoll{from{background-position:0 100%,0 0,0 0}to{background-position:0 -200%,0 0,0 0}}
 @media (prefers-reduced-motion:reduce){.crtfx{animation:none}}
+/* numnuts-style title card: name with a blinking cursor, and the little face bopping next to it */
+.top .title{display:flex;align-items:baseline;gap:12px;pointer-events:auto;text-transform:none}
+.top .title h1{margin:0;font:400 40px/1 var(--mono);letter-spacing:.08em;color:var(--gold);text-shadow:0 0 8px var(--gold)}
+.top .title h1::after{content:"_";animation:blink 1s steps(2) infinite}
+.top .title .logo{font-family:"VT323","Segoe UI Symbol","Apple Symbols","Noto Sans Symbols 2",system-ui,sans-serif;font-size:28px;white-space:nowrap;color:var(--gold);text-shadow:0 0 8px var(--gold);display:inline-block;animation:bop 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:0}}
+@keyframes bop{50%{transform:translateY(-3px) rotate(-3deg)}}
+@media (prefers-reduced-motion:reduce){.top .title h1::after,.top .title .logo{animation:none}}
+@media (max-width:640px){.top .title h1{font-size:30px}.top .title .logo{font-size:22px}}
+/* colour picker: numnuts' phosphor presets plus a custom colour */
+#palette{width:220px;display:grid;gap:8px;padding:10px}
+#phos{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+#phos button{aspect-ratio:1;padding:0;border:2px solid transparent!important;background:var(--c)!important;box-shadow:0 0 8px var(--c);clip-path:none}
+#phos button[aria-pressed=true]{border-color:#fff!important}
+#palette label{display:flex;justify-content:space-between;align-items:center;font-size:17px}
+#phosCustom{width:48px;height:28px;padding:0;border:1px solid var(--gold);background:#000;cursor:pointer}
+button.swatch .ic{display:inline-block;width:.7em;height:.7em;background:var(--gold);color:transparent;overflow:hidden;vertical-align:middle;margin-right:2px}
+/* stroke colours use the same square glowing swatches as the interface colour picker */
+.swatches.mini{gap:6px}
+.swatches.mini .sw{padding:0;border:2px solid transparent;border-radius:0;background:transparent!important;clip-path:none}
+.swatches.mini .sw i{width:24px!important;height:24px!important;border:0;border-radius:0!important;box-shadow:0 0 8px color-mix(in srgb,var(--gold) 45%,transparent)}
+.swatches.mini .sw[aria-pressed=true]{border-color:#fff;outline:0}
+.swatches.mini .sw[aria-pressed=true] i{outline:0}
+.simple .swatches.mini .sw i{width:22px!important;height:22px!important}
