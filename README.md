@@ -13,7 +13,8 @@
 - **Stays:** how long a pattern lasts before it fades: 1 to 30 seconds, or forever.
 - **Colour:** six phosphor colours or your own. The strokes and the interface both use it.
 - **Language:** EN · 中文 · 日本語 · ES · FR · РУ · DE.
-- ⚙ **Settings:** background, scale, key, tuning, save/load and image or video export.
+- ▣ **Screenshot:** saves the drawing as an image.
+- ⚙ **Settings:** background pattern (always on black), scale, key and tuning.
 
 ## Keys
 
@@ -24,6 +25,7 @@
 | `-` `=` | symmetry |
 | `Z` / `Ctrl+Z` | undo |
 | `C` `C` | clear (undo brings it back) |
+| `P` | screenshot |
 | `Esc` | hide / show the bottom menu |
 | `?` | help |
 

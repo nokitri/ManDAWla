@@ -20,7 +20,7 @@
     <button id="tRedo" data-gone title="Ctrl/Cmd+Shift+Z">↷ Redo</button>
     <button id="tClear" title="C">✕ Clear</button>
     <button id="composeBtn" data-gone>✦ Compose</button>
-    <button id="snap" data-gone title="P">▣ Snapshot</button>
+    <button id="snap" title="P">▣ Screenshot</button>
     <button id="fs">⤢ Fullscreen</button>
     <button id="gsBtn" aria-expanded="false" aria-controls="side">⚙ Settings</button>
     <button id="langBtn" title="L">◍ EN</button>
@@ -63,6 +63,7 @@
       <dt><kbd>Ctrl/Cmd+Z</kbd> · <kbd>Z</kbd></dt><dd data-i18n="Undo">Undo</dd>
       <dt><kbd>C</kbd> <kbd>C</kbd></dt><dd data-i18n="Clear the drawing (press twice; undo brings it back)">Clear the drawing (press twice; undo brings it back)</dd>
       <dt><kbd>Esc</kbd></dt><dd data-i18n="Hide / show the bottom menu">Hide / show the bottom menu</dd>
+      <dt><kbd>P</kbd></dt><dd data-i18n="Screenshot">Screenshot</dd>
       <dt><kbd>?</kbd></dt><dd data-i18n="This list">This list</dd>
     </dl>
     <div class="row"><button id="tourStart" data-gone>▶ Tutorial</button><button id="helpClose" data-i18n="Close">Close</button></div>
@@ -180,7 +181,7 @@
     <button role="tab" id="t-modes" aria-controls="p-modes" aria-selected="true">Visuals</button>
     <button role="tab" id="t-sound" aria-controls="p-sound" aria-selected="false">Key</button>
     <button role="tab" data-gone id="t-loop" aria-controls="p-loop" aria-selected="false">Loop</button>
-    <button role="tab" id="t-proj" aria-controls="p-presets" aria-selected="false">Save / Load</button>
+    <button role="tab" data-gone id="t-proj" aria-controls="p-presets" aria-selected="false">Save / Load</button>
   </div>
   <!-- MODES -->
   <div class="panel" role="tabpanel" id="p-modes" aria-labelledby="t-modes">
@@ -199,8 +200,8 @@
     <div class="swatches" data-gone id="themeSw" role="group" aria-label="Interface theme"></div>
     <div class="sec">Background</div>
     <div class="row">
-      <div class="field"><label class="lbl" for="bgCustom">Color</label><input id="bgCustom" type="color" value="#000000"></div>
-      <div class="field"><label class="lbl" for="bgfx" data-i18n="Style">Style</label><select id="bgfx"><option value="none">PLAIN</option><option value="stars">STARS</option><option value="twinkle">TWINKLING STARS</option><option value="warp">WARP SPEED</option><option value="dust">FLOATING DUST</option><option value="nebula">NEBULA</option><option value="aurora">AURORA</option><option value="geometry">SACRED GRID</option><option value="hex">HEX FIELD</option><option value="rings">PULSE RINGS</option></select></div>
+      <div class="field" data-gone><label class="lbl" for="bgCustom">Color</label><input id="bgCustom" type="color" value="#000000"></div>
+      <div class="field"><label class="lbl" for="bgfx">Pattern</label><select id="bgfx"><option value="none">PLAIN</option><option value="stars">STARS</option><option value="twinkle">TWINKLING STARS</option><option value="warp">WARP SPEED</option><option value="dust">FLOATING DUST</option><option value="nebula">NEBULA</option><option value="aurora">AURORA</option><option value="geometry">SACRED GRID</option><option value="hex">HEX FIELD</option><option value="rings">PULSE RINGS</option></select></div>
     </div>
   </div>
 
@@ -255,7 +256,7 @@
   </div>
 
   <!-- PROJECTS -->
-  <div class="panel" role="tabpanel" id="p-presets" aria-labelledby="t-proj" hidden>
+  <div class="panel" role="tabpanel" data-gone id="p-presets" aria-labelledby="t-proj" hidden>
     <div class="row">
       <input id="pname" type="text" placeholder="Name This Project" maxlength="30">
       <button id="save" class="primary">Save Project</button>
