@@ -52,11 +52,8 @@ let presetName = null;
 function updateMeta(){
   $('meta').textContent = [presetName || 'Untitled', (typeof curT === 'function' && curT() ? trackName(curT()) + ' · ' : '') + (typeof instLabel === 'function' && typeof curT === 'function' && curT() ? instLabel(curT()) : INST_NAMES[S.inst]), S.chord !== 'single' ? CHORD_NAMES[S.chord] : null, MODES[S.kal], S.loop ? S.bpm + ' BPM Loop' : null].filter(Boolean).join(' · ');
 }
-function bgHex(){ return S.bg === 'custom' ? S.bgCustom : BGS[S.bg].c; }
-function isLight(){
-  if (S.bg !== 'custom') return !!BGS[S.bg].light;
-  const [r,g,b] = hexRGB(S.bgCustom); return (r*.299 + g*.587 + b*.114) > 150;
-}
+function bgHex(){ return '#000000'; }   // the background is always black; only its pattern is a choice
+function isLight(){ return false; }
 let LIGHT = false, BG = [0,0,0];
 function applyBg(){
   LIGHT = isLight(); BG = hexRGB(bgHex());

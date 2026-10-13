@@ -40,6 +40,7 @@ addEventListener('keydown', e => {
   if (k === '[' || k === ']'){ S.width = Math.max(.25, Math.min(6, S.width + (k === ']' ? .25 : -.25))); $('width').value = S.width; $('widthVal').textContent = S.width; toast('Brush size ' + S.width); return; }
   if (k === '-' || k === '='){ S.sym = Math.max(1, Math.min(16, S.sym + (k === '=' ? 1 : -1))); $('sym').value = S.sym; $('symVal').textContent = S.sym; toast('Symmetry ' + S.sym); return; }
   if (k === 'z'){ undo(); return; }
+  if (k === 'p'){ $('snap').click(); return; }
   if (k === 'c'){ $('tClear').click(); if (clearArmed) toast('Press C again to clear everything'); return; }
   const n = 'asdfghjkl'.indexOf(k); if (n < 0) return;
   noteOn(k, n + SCALES[S.scale].length, .6, n/8);

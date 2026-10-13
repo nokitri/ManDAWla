@@ -5,8 +5,7 @@ const CY = () => H/2 - Math.min(30, H*.03);
 const maxR = () => Math.min(W,H)*.46;
 const fieldR = () => Math.hypot(W, H)*.5;   // the whole screen is drawable, out to the corners
 function toLocal(x, y){
-  let dx = x - W/2, dy = y - CY();
-  if (D3){ const p = D3_P, a = D3_TILT*Math.PI/180, v = dy*p/(p*Math.cos(a) + dy*Math.sin(a)); dx *= (p - v*Math.sin(a))/p; dy = v; }   // undo the 3D tilt
+  const dx = x - W/2, dy = y - CY();
   const c = Math.cos(-rot), s = Math.sin(-rot);
   return [dx*c - dy*s, dx*s + dy*c];
 }
