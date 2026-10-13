@@ -1,8 +1,8 @@
 # mandawla ✌︎('ω')✌︎
 
-**Draw a mandala, hear it play.** Drag anywhere on the screen. Every stroke is mirrored into a symmetric pattern, and its distance from the centre sets the note: the corners are low and the middle is high.
+Drag anywhere on the screen. Every stroke is mirrored into a symmetric pattern, and its distance from the centre sets the note
 
-▶ **Try it: [nokitri.github.io/mandawla](https://nokitri.github.io/mandawla/)**
+**Try it: [nokitri.github.io/mandawla](https://nokitri.github.io/mandawla/)**
 
 ![mandawla: a pink phosphor mandala drawn across the screen](docs/screenshot.png)
 
