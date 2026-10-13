@@ -1,72 +1,47 @@
 /* ================= Strokes ================= */
-const strokes = [], active = new Map(), sparks = [], ripples = [], pulses = [];
-let rot = 0, ANG = {}, lastNote = 0, lastIdx = -1, tunnelPhase = 0, colorShift = 0, frameNow = 0;
+const strokes = [], active = new Map(), sparks = [], ripples = [];
+let rot = 0, lastNote = 0, lastIdx = -1, tunnelPhase = 0, colorShift = 0, frameNow = 0;
 const CY = () => H/2 - Math.min(30, H*.03);
 const maxR = () => Math.min(W,H)*.46;
 const fieldR = () => Math.hypot(W, H)*.5;   // the whole screen is drawable, out to the corners
+const scaleN = () => SCALES[S.scale].length*3;
 function toLocal(x, y){
-  const dx = x - W/2, dy = y - CY();
-  const c = Math.cos(-rot), s = Math.sin(-rot);
+  const dx = x - W/2, dy = y - CY(), c = Math.cos(-rot), s = Math.sin(-rot);
   return [dx*c - dy*s, dx*s + dy*c];
 }
-function idxAt(lx, ly){
-  const n = SCALES[S.scale].length * 3, d = Math.min(1, Math.hypot(lx,ly)/fieldR());   // pitch spans the whole screen: corners low, centre high
-  return Math.max(0, Math.min(n-1, Math.floor((1-d)*n)));
-}
+// pitch spans the whole screen: corners low, centre high
+const idxAt = (lx, ly) => Math.max(0, Math.min(scaleN() - 1, Math.floor((1 - Math.min(1, Math.hypot(lx, ly)/fieldR()))*scaleN())));
+const panAt = lx => Math.max(-.7, Math.min(.7, lx/maxR()));
 let strokeCount = 0;
 function newStroke(){
   strokeCount++;
-  return { pts:[], t0: (strokeCount*.137 + Math.random()*.08) % 1, pal:S.palette, cs: S.palette==='custom' ? [S.c1,S.c2,S.c3] : null,
-    brush:S.brush, width:S.width, stamp:S.stamp, inst:S.inst, track:S.cur, ch: S.arp !== 'off' && S.chord === 'single' ? 'triad' : S.chord, notes:[], pulse:1, dirty:true, born:performance.now(), band:1, seed: Math.random()*1000|0 };
+  return { pts:[], t0: (strokeCount*.137 + Math.random()*.08) % 1, brush:S.brush, width:S.width, stamp:S.stamp,
+    ch: S.arp !== 'off' && S.chord === 'single' ? 'triad' : S.chord, pulse:1, dirty:true, band:1, seed: Math.random()*1000|0 };
 }
 function addPoint(st, lx, ly, now, silent){
   const p = st.pts, last = p[p.length-1];
   if (p.length > 900) return;
   if (last && Math.hypot(lx-last[0], ly-last[1]) < 3) return;
-  if (Math.hypot(lx, ly) > fieldR()*1.5) return;
-  p.push([lx, ly]); st.born = now; st.dirty = true;
-  st.movedAt = now;
-  if (silent || !S.sing) return;
+  p.push([lx, ly]); st.dirty = true;
+  if (silent) return;
   if (p.length === 1){ noteHere(st, lx, ly, now); return; }   // a new click always sounds
   if (now - lastNote > 110){
     const i = idxAt(lx, ly);
     if (i !== lastIdx || (S.holdMode === 'repeat' && now - lastNote > 400)) noteHere(st, lx, ly, now);
   }
 }
-function recordNote(st, i, panPos, b, ch){
-  if (!S.rec || st.noRec) return null;
-  const L = trackLoopLen(trackOf(st)); if (b === undefined){ b = beatsAt(ac.currentTime); if (S.quant) b = Math.round(b*S.grid)/S.grid; }
-  const note = { b: ((b % L) + L) % L, cyc: Math.floor(b/L), i, pi: st.pts.length-1, pan: +panPos.toFixed(2), ch: ch || S.chord };
-  st.notes.push(note); return note;
-}
-function closeHeldNote(st){
-  if (!st.heldNote) return;
-  let d = beatsAt(ac.currentTime) - st.heldStart;
-  if (S.quant) d = Math.round(d*S.grid)/S.grid;
-  st.heldNote.d = Math.max(1/S.grid, Math.min(d, LB()));
-  st.heldNote = null;
-}
-function noteHere(st, lx, ly, now, b){
-  const p = st.pts, i = idxAt(lx, ly), panPos = Math.max(-.7, Math.min(.7, lx / maxR()));
-  if (S.arp !== 'off' && isActive(st)){ st.arpBase = i; st.arpPan = panPos; lastIdx = i; lastNote = now; return; }   // the arpeggiator plays it on the grid
-  const sustain = S.holdMode === 'sustain' && isActive(st);
-  if (sustain && S.glide && !DRUM_INSTS.has(instOf(st)) && st.held && !st.held.done){
-    // glide: bend the note that is already sounding instead of starting a new one
-    glideHeld(st.held, i); closeHeldNote(st);
-    const note = recordNote(st, i, panPos, b); if (note) note.gl = 1;
-    st.heldNote = note; st.heldStart = beatsAt(ac.currentTime);
-    lastIdx = i; lastNote = now; st.pulse = 1; st.noteAt = now; spark(st, p.length-1, 3);
-    return;
-  }
+function noteHere(st, lx, ly, now){
+  const i = idxAt(lx, ly), pn = panAt(lx), live = !!st.id;   // id is set while the pointer is still down
+  lastIdx = i; lastNote = now; st.pulse = 1; st.noteAt = now;
+  if (S.arp !== 'off' && live){ st.arpBase = i; st.arpPan = pn; return; }   // the arpeggiator plays it on the beat
+  const sustain = S.holdMode === 'sustain' && live;
+  if (sustain && S.glide && !DRUM_INSTS.has(S.inst) && st.held && !st.held.done){ glideHeld(st.held, i); spark(st, st.pts.length-1, 3); return; }   // bend the note that is already sounding
   finishHeld(st);
-  const h = voice(instOf(st), i, .34, undefined, panPos, sustain ? Infinity : undefined, undefined, st.track);
-  lastIdx = i; lastNote = now; st.pulse = 1; st.noteAt = now; lightTones(st, null, trackStrum(trackOf(st)));
-  const note = recordNote(st, i, panPos, b);
-  if (sustain){ st.held = h; st.heldNote = note; st.heldStart = beatsAt(ac.currentTime); }
-  spark(st, p.length-1, 5);
+  const h = voice(S.inst, i, .34, undefined, pn, sustain ? Infinity : undefined);
+  if (sustain) st.held = h;
+  lightTones(st, null, S.strum); spark(st, st.pts.length-1, 5);
 }
 // each chord tone of a stroke (0 = the line itself, 1.. = its chord lines) lights when that tone sounds
-const trackStrum = t => t && t.strum !== undefined ? (t.id === S.cur ? S.strum : t.strum) : S.strum;
 function lightTones(st, ks, strum = 0){
   if (!st.ch || st.ch === 'single' || !CHORDS[st.ch]) return;
   const now = performance.now(); if (!st.tone) st.tone = [];
@@ -78,52 +53,28 @@ function toneF(st, k, now){
   const back = Math.max(0, Math.min(1, (now - st.toneAt - 1400)/600));   // after a quiet moment the whole chord shows again
   return v + (1 - v)*back;
 }
-function finishHeld(st){
-  if (!st.held) return;
-  release(st.held); closeHeldNote(st);
-  st.held = null;
-}
-/* Holding still repeats the note on every grid step (1/4, 1/8 or 1/16), so a long press becomes a rhythm */
-let tapHold = null;
+function finishHeld(st){ if (st.held){ release(st.held); st.held = null; } }
+/* Holding still: a spiral grows around the held point, and the arpeggiator or "repeat" steps on the beat grid */
 setInterval(() => {
-  if (!ac) return;
+  if (!ac || !active.size) return;
   const now = performance.now(), g = Math.floor(beatsAt(ac.currentTime)*S.grid);
-  // holding still keeps drawing: a spiral grows around the held point (and turns with the mandala)
   for (const st of active.values()){
-    if (st.sx === undefined) continue;
-    const still = now - (st.realMovedAt || now);
-    if (still < 180){ st.spinR = 0; continue; }
-    st.spinA = (st.spinA || Math.random()*TAU) + .085;
-    st.spinR = Math.min(46, (st.spinR || 2) + .32);
-    const [lx, ly] = toLocal(st.sx + Math.cos(st.spinA)*st.spinR, st.sy + Math.sin(st.spinA)*st.spinR);
-    addPoint(st, lx, ly, now, true);
-  }
-  if (S.sing) for (const st of active.values()){
-    const p = st.pts; if (!p.length) continue;
+    const p = st.pts, still = now - st.movedAt;
+    if (still < 180) st.spinR = 0;
+    else {
+      st.spinA = (st.spinA || Math.random()*TAU) + .085; st.spinR = Math.min(46, (st.spinR || 2) + .32);
+      addPoint(st, ...toLocal(st.sx + Math.cos(st.spinA)*st.spinR, st.sy + Math.sin(st.spinA)*st.spinR), now, true);
+    }
     if (st.held){ st.pulse = Math.max(st.pulse, .55); continue; }
     if (S.arp !== 'off'){
       if (st.arpBase == null || st.arpStep === g) continue;
-      st.arpStep = g; const list = chordIdx(st.arpBase, S.chord === 'single' ? 'triad' : S.chord);
-      const ak = arpIndex(st.arpN = (st.arpN ?? -1) + 1, list.length), i = list[ak];
-      voice(instOf(st), i, .34, undefined, st.arpPan, undefined, 'single', st.track);
-      const an = recordNote(st, i, st.arpPan, g/S.grid, 'single'); if (an) an.ak = ak; lightTones(st, [ak]); st.pulse = 1; st.noteAt = now; spark(st, p.length-1, 3);
-      continue;
+      st.arpStep = g; const list = chordIdx(st.arpBase, S.chord === 'single' ? 'triad' : S.chord), ak = arpIndex(st.arpN = (st.arpN ?? -1) + 1, list.length);
+      voice(S.inst, list[ak], .34, undefined, st.arpPan, undefined, 'single'); lightTones(st, [ak]); st.pulse = 1; spark(st, p.length-1, 3);
     }
-    if (S.holdMode !== 'repeat') continue;
-    if (now - (st.realMovedAt||0) < 160 || now - (st.noteAt||0) < 90) continue;
-    if (st.holdStep === g) continue;
-    st.holdStep = g; const q = p[p.length-1];
-    noteHere(st, q[0], q[1], now, g/S.grid);
-    st.width = Math.min(st.width*1.03, 14); st.dirty = true;   // the dot swells while you hold
-  }
-  if (tapHold && S.arp !== 'off' && tapHold.step !== g){
-    tapHold.step = g; const list = chordIdx(tapHold.i, S.chord === 'single' ? 'triad' : S.chord);
-    const i = list[arpIndex(tapHold.n = (tapHold.n ?? -1) + 1, list.length)];
-    voice(S.inst, i, .5, undefined, tapHold.pan, undefined, 'single');
-    ripples.push({ x:tapHold.x, y:tapHold.y, r:0, life:.7, t:i/20 });
-  } else if (tapHold && !tapHold.h && tapHold.step !== g && now - tapHold.t > 160){
-    tapHold.step = g; voice(S.inst, tapHold.i, .5, undefined, tapHold.pan);
-    ripples.push({ x:tapHold.x, y:tapHold.y, r:0, life:1, t:tapHold.i/20 });
+    else if (S.holdMode === 'repeat' && still >= 160 && now - (st.noteAt||0) >= 90 && st.holdStep !== g){
+      st.holdStep = g; const q = p[p.length-1]; noteHere(st, q[0], q[1], now);
+      st.width = Math.min(st.width*1.03, 14); st.dirty = true;   // the dot swells while you hold
+    }
   }
 }, 15);
 function arpIndex(n, len){
@@ -143,93 +94,43 @@ function spark(st, pi, n, speed=1){
   if (sparks.length > 140) sparks.splice(0, sparks.length-140);
 }
 
+
+let strokeId = 0;
 cv.addEventListener('pointerdown', e => {
-  ensureAudio();
-  if (tool !== 'draw'){ try { cv.setPointerCapture(e.pointerId); } catch {} toolDown(e); return; }
-  if (!S.draw){
-    const [lx, ly] = toLocal(e.clientX, e.clientY), i = idxAt(lx, ly);
-    const pn = Math.max(-.7, Math.min(.7, lx/maxR()));
-    const th = S.arp !== 'off' ? null : voice(S.inst, i, .6, undefined, pn, S.holdMode === 'sustain' ? Infinity : undefined);
-    ripples.push({ x:e.clientX, y:e.clientY, r:0, life:1, t:i/20 });
-    if (S.holdMode === 'sustain') try { cv.setPointerCapture(e.pointerId); } catch {}
-    if (S.arp !== 'off') try { cv.setPointerCapture(e.pointerId); } catch {}
-    tapHold = { id:e.pointerId, x:e.clientX, y:e.clientY, i, pan:pn, h:th, t:performance.now(), step: ac ? Math.floor(beatsAt(ac.currentTime)*S.grid) : 0 };
-    return;
-  }
-  try { cv.setPointerCapture(e.pointerId); } catch {}
-  // the circle is the instrument: outside it nothing draws, and a stroke picks up again when you come back in
-  if (outside(e.clientX, e.clientY)){ waiting.add(e.pointerId); return; }
-  startStroke(e.pointerId, e.clientX, e.clientY);
-});
-const waiting = new Set();
-const outside = () => false;   // no circle limit: draw anywhere
-function startStroke(id, x, y){
+  ensureAudio(); try { cv.setPointerCapture(e.pointerId); } catch {}
   pushHistory();
-  const st = newStroke(); strokes.push(st); active.set(id, st);
-  st.sx = x; st.sy = y; st.realMovedAt = performance.now();
-  if (strokes.length > 60){ const j = strokes.findIndex(q => !q.notes.length && q !== st); if (j >= 0) strokes.splice(j, 1); else if (strokes.length > 200) strokes.shift(); }
-  addPoint(st, ...toLocal(x, y), performance.now());
-  return st;
-}
-function closeStroke(id){
-  const st = active.get(id); if (!st) return;
-  finishHeld(st); active.delete(id);
-  if (st.pts.length < 2){ st.pts.push([st.pts[0][0]+.5, st.pts[0][1]+.5]); st.dirty = true; }
-}
+  const st = newStroke(); st.id = ++strokeId; strokes.push(st); active.set(e.pointerId, st);
+  st.sx = e.clientX; st.sy = e.clientY; st.movedAt = performance.now();
+  if (strokes.length > 60) strokes.splice(0, strokes.length - 60);
+  addPoint(st, ...toLocal(e.clientX, e.clientY), performance.now());
+});
 cv.addEventListener('pointermove', e => {
-  if (toolOp){ toolMoveEv(e); return; }
-  if (tool !== 'draw') return;
-  if (tapHold && tapHold.id === e.pointerId && tapHold.h && S.glide && !DRUM_INSTS.has(S.inst)){
-    const [lx, ly] = toLocal(e.clientX, e.clientY), i = idxAt(lx, ly);
-    if (i !== tapHold.i){ tapHold.i = i; glideHeld(tapHold.h, i); ripples.push({ x:e.clientX, y:e.clientY, r:0, life:.6, t:i/20 }); }
-    return;
-  }
-  if (!active.has(e.pointerId) && !waiting.has(e.pointerId)) return;
-  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
-  for (const ev of evs){
-    const out = outside(ev.clientX, ev.clientY);
-    let st = active.get(e.pointerId);
-    if (st && out){ addEdge(st, ev.clientX, ev.clientY); closeStroke(e.pointerId); waiting.add(e.pointerId); continue; }
-    if (!st){ if (out) continue; waiting.delete(e.pointerId); st = startStroke(e.pointerId, ev.clientX, ev.clientY); continue; }
-    if (Math.hypot(ev.clientX - st.sx, ev.clientY - st.sy) > 2){ st.sx = ev.clientX; st.sy = ev.clientY; st.realMovedAt = performance.now(); }
+  const st = active.get(e.pointerId); if (!st) return;
+  for (const ev of e.getCoalescedEvents ? e.getCoalescedEvents() : [e]){
+    if (Math.hypot(ev.clientX - st.sx, ev.clientY - st.sy) > 2){ st.sx = ev.clientX; st.sy = ev.clientY; st.movedAt = performance.now(); }
     addPoint(st, ...toLocal(ev.clientX, ev.clientY), performance.now());
   }
 });
-// leaving the circle: finish the line exactly on the edge
-function addEdge(st, x, y){ const [lx, ly] = toLocal(x, y), d = Math.hypot(lx, ly) || 1, R = maxR()*.999; addPoint(st, lx*R/d, ly*R/d, performance.now(), true); }
 function endStroke(e){
-  if (toolOp){ toolUp(); return; }
-  if (tapHold && tapHold.id === e.pointerId){ release(tapHold.h); tapHold = null; }
-  waiting.delete(e.pointerId);
-  closeStroke(e.pointerId);
+  const st = active.get(e.pointerId); if (!st) return;
+  finishHeld(st); active.delete(e.pointerId); st.id = 0;
+  if (st.pts.length < 2){ st.pts.push([st.pts[0][0]+.5, st.pts[0][1]+.5]); st.dirty = true; }
 }
 cv.addEventListener('pointerup', endStroke); cv.addEventListener('pointercancel', endStroke);
-const isActive = st => { for (const v of active.values()) if (v===st) return true; return false; };
-/* ---- Undo / redo: snapshots of the drawing and its recorded notes ---- */
-const undoStack = [], redoStack = [];
-const snapNow = () => ({ list: strokes.slice(), notes: strokes.map(s => s.notes.slice()), tracks: S.tracks.slice(), cur: S.cur, bars: S.bars });
-function dropSel(){ if (typeof tlSel !== 'undefined' && tlSel.size){ tlSel.clear(); syncTlBtns(); } }
-function pushHistory(){ undoStack.push(snapNow()); if (undoStack.length > 60) undoStack.shift(); redoStack.length = 0; dirtySession = true; }
-function restoreSnap(sn){
-  const now = performance.now();
-  strokes.length = 0; sn.list.forEach((s, i) => { s.notes = sn.notes[i]; s.born = now; s.notes.forEach(n => n.cyc = -1); strokes.push(s); });
-  if (sn.tracks && (sn.tracks.length !== S.tracks.length || sn.tracks.some((t, i) => t !== S.tracks[i]))){
-    stashTrack(); S.tracks = sn.tracks.slice(); S.cur = trk(sn.cur) ? sn.cur : trk(S.cur) ? S.cur : S.tracks[0].id;
-    loadTrack(curT()); syncUI(); syncInst(); renderTracks(); updateMix(); updateMeta(); trackHead(); syncTrackTools();
-  }
-  if (sn.bars && sn.bars !== S.bars){ S.bars = sn.bars; $('barsSel').value = S.bars; }
-  dropSel(); lanesAt = 0; mixSig = ''; dirtySession = true;
+/* ---- Undo: snapshots of the stroke list ---- */
+const undoStack = [];
+function pushHistory(){ undoStack.push(strokes.slice()); if (undoStack.length > 60) undoStack.shift(); }
+function undo(){
+  if (!undoStack.length){ toast('Nothing to undo'); return; }
+  strokes.length = 0; strokes.push(...undoStack.pop()); strokes.forEach(s => s.endT = undefined); toast('Undo');
 }
-function undo(){ if (!undoStack.length){ toast('Nothing to undo'); return; } redoStack.push(snapNow()); restoreSnap(undoStack.pop()); toast('Undo'); }
-function redo(){ if (!redoStack.length){ toast('Nothing to redo'); return; } undoStack.push(snapNow()); restoreSnap(redoStack.pop()); toast('Redo'); }
 $('tUndo').onclick = undo;
-$('tRedo').onclick = redo;
 let clearArmed = 0;
 function disarmClear(){ clearArmed = 0; $('tClear').classList.remove('armed'); setLbl($('tClear'), '✕ Clear'); }
 $('tClear').onclick = () => {
   if (!strokes.length){ toast('Nothing to clear'); return; }
   if (!clearArmed){ clearArmed = setTimeout(disarmClear, 3000); $('tClear').classList.add('armed'); setLbl($('tClear'), '✕ Clear All?'); fitTop(); toast('Click Clear again to erase everything'); return; }
-  clearTimeout(clearArmed); disarmClear(); pushHistory(); strokes.length = 0; sparks.length = 0; presetName = null; dropSel(); updateMeta(); renderPresets(); toast('Cleared · Undo to bring it back'); };
+  clearTimeout(clearArmed); disarmClear(); pushHistory(); strokes.length = 0; sparks.length = 0; toast('Cleared · Undo to bring it back'); };
 
 /* ---- Generative drawing ---- */
 const SHAPES = [
@@ -252,52 +153,31 @@ function demoStroke(silent, shapeIdx){
 }
 
 /* ================= Audio analysis ================= */
-let bass=0, mid=0, high=0, beat=0, lastBeat=0, slowB=0, pk={b:.15,m:.12,h:.08}, rawB=0;
+let bass=0, mid=0, high=0, beat=0, lastBeat=0, slowB=0, pk={b:.15,m:.12,h:.08};
 function bands(now, dt){
   if (!analyser){ bass*=.95; mid*=.95; high*=.95; beat*=.9; return; }
-  analyser.getByteFrequencyData(freqData); if (S.viz === 'wave') analyser.getByteTimeDomainData(timeData);
+  analyser.getByteFrequencyData(freqData);
   const avg=(a,b)=>{let s=0;for(let i=a;i<b;i++)s+=freqData[i];return s/((b-a)*255)};
-  rawB = avg(1,12); const rm = avg(12,90), rh = avg(90,400);
-  pk.b = Math.max(rawB, pk.b*.996, .06); pk.m = Math.max(rm, pk.m*.996, .05); pk.h = Math.max(rh, pk.h*.996, .03);
-  const nb = rawB < .02 ? 0 : Math.pow(rawB/pk.b, 1.6), nm = rm < .015 ? 0 : Math.pow(rm/pk.m, 1.4), nh = rh < .01 ? 0 : Math.pow(rh/pk.h, 1.3);
+  const rb = avg(1,12), rm = avg(12,90), rh = avg(90,400);
+  pk.b = Math.max(rb, pk.b*.996, .06); pk.m = Math.max(rm, pk.m*.996, .05); pk.h = Math.max(rh, pk.h*.996, .03);
+  const nb = rb < .02 ? 0 : Math.pow(rb/pk.b, 1.6), nm = rm < .015 ? 0 : Math.pow(rm/pk.m, 1.4), nh = rh < .01 ? 0 : Math.pow(rh/pk.h, 1.3);
   bass += (nb - bass)*(nb > bass ? .6 : .18); mid += (nm - mid)*.3; high += (nh - high)*.35;
-  const energy = rawB + rm*.6, flux = energy - slowB; slowB = slowB*.9 + energy*.1;
+  const energy = rb + rm*.6, flux = energy - slowB; slowB = slowB*.9 + energy*.1;
   if (flux > Math.max(.03, pk.b*.1) && now - lastBeat > 150){ beat = 1; lastBeat = now; onBeat(); }
   beat *= Math.pow(.86, dt/16.7);
 }
 function onBeat(){
   const r = S.react/100; if (!r) return;
   colorShift += .045*r;
-  if (S.viz === 'pulse') pulses.push({ r: maxR()*.15, life: 1 });
-  if (!S.beatFx) return;
   const live = strokes.filter(s => s.pts.length > 4);
   for (let k=0;k<Math.min(3, live.length);k++){ const st = live[Math.random()*live.length|0]; st.pulse = Math.max(st.pulse, .8); spark(st, Math.random()*st.pts.length|0, 3, 1.6); }
 }
 
 /* ================= Stroke color ================= */
-function strokeRGB(st, k, glow, n = S.sym){
-  const tk = st.track !== undefined ? trackOf(st) : null;   // spread, drift and brightness belong to the stroke's track
-  const spread = (+trackVal(tk, 'spread') || 0)/100, drift = trackVal(tk, 'drift') ? frameNow*.00003 : 0;
-  let t = st.t0 + (k/n)*spread*.6 + drift + colorShift + mid*.08*(S.react/100);
-  if (tk && trackVal(tk, 'pitchCol')){ const pt = pitchT(st); t = (st.pal === 'rainbow' ? pt*.85 : pt*.5) + (k/n)*spread*.08 + drift*.3; }   // each ring has its own color
-  let c = sample(UI_STOPS, t);   // every stroke is a shade of the interface colour
-  if (false) c = hsl2rgb(t*360, 88, LIGHT ? 45 : 60);
-  else if (st.pal === 'custom') c = sample((st.cs || [S.c1,S.c2,S.c3]).map(hexRGB), t);
-  const b = (+trackVal(tk, 'bright') || 100)/100;
-  if (LIGHT){ const d = .25 + glow*.15; c = c.map(v => v*(1-d)*Math.min(1,b+.2)); }
-  else { const w = Math.min(.6, glow*.3); c = c.map(v => Math.min(255, (v + (255-v)*w)*b)); }
-  return c;
+// every stroke is a shade of the interface colour, shifting along its copies, with the music and over time
+function paletteRGB(t, k = 0, glow = .2, n = S.sym){
+  t += (k/n)*S.spread/100*.6 + (S.drift ? frameNow*.00003 : 0) + colorShift + mid*.08*(S.react/100);
+  const w = Math.min(.6, glow*.3), b = S.bright/100;
+  return sample(UI_STOPS, t).map(v => Math.min(255, (v + (255-v)*w)*b));
 }
-// where a stroke sits in pitch, 0 = lowest ring, 1 = highest
-function pitchT(st){
-  const sig = st.notes.length + '|' + st.pts.length; if (st._ptSig === sig) return st._pt;
-  const N = SCALES[S.scale].length*3; let v;
-  if (st.notes.length) v = st.notes.reduce((a, n) => a + n.i, 0)/st.notes.length/(N - 1);
-  else { let rs = 0; for (const q of st.pts) rs += Math.hypot(q[0], q[1]); v = 1 - Math.min(1, rs/Math.max(1, st.pts.length)/maxR()); }
-  st._ptSig = sig; st._pt = Math.max(0, Math.min(1, v)); return st._pt;
-}
-function paletteRGB(t){
-  const fake = { t0: t, pal: S.palette, cs: [S.c1,S.c2,S.c3] };
-  const save = S.spread; S.spread = 0; const c = strokeRGB(fake, 0, .2); S.spread = save; return c;
-}
-
+const strokeRGB = (st, k, glow, n) => paletteRGB(st.t0, k, glow, n);

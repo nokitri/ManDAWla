@@ -26,28 +26,28 @@ function unlockAudio(){
 ['touchstart','touchend','pointerdown','mousedown','click','keydown'].forEach(ev => addEventListener(ev, () => { if (!audioUnlocked || !ac || ac.state !== 'running') unlockAudio(); }, { capture:true, passive:true }));
 // coming back to the tab (or after a phone call) the audio engine may have been paused
 document.addEventListener('visibilitychange', () => { if (!document.hidden && ac && ac.state !== 'running') ac.resume().catch(() => {}); if (!document.hidden && silentEl && audioUnlocked) silentEl.play().catch(() => {}); });
-let impBuf = null, ac, analyser, master, freqData, timeData, noiseBuf, clock0 = 0;
+let impBuf = null, ac, analyser, master, bus, freqData, timeData, noiseBuf, clock0 = 0;
 function ensureAudio(){
   if (ac){ if (ac.state !== 'running' && ac.state !== 'closed') ac.resume().catch(() => {}); return; }
   ac = new (window.AudioContext||window.webkitAudioContext)();
   master = ac.createGain(); master.gain.value = .8;
   const comp = ac.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;
-  impBuf = impulse(3.4);   // shared by every track's reverb effect
+  impBuf = impulse(3.4);
   analyser = ac.createAnalyser(); analyser.fftSize = 2048; analyser.smoothingTimeConstant = .72;
   freqData = new Uint8Array(analyser.frequencyBinCount); timeData = new Uint8Array(analyser.fftSize);
   master.connect(comp);
   comp.connect(analyser); analyser.connect(ac.destination);
   noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
   const nd = noiseBuf.getChannelData(0); for (let i=0;i<nd.length;i++) nd[i] = Math.random()*2-1;
-  clock0 = ac.currentTime + .05; schedT = ac.currentTime;
-  setInterval(scheduler, 25);
+  clock0 = ac.currentTime + .05;
+  bus = ac.createGain(); bus.gain.value = S.vol/80; bus.connect(master); bus.inp = ac.createGain(); buildFx();
 }
 function impulse(sec){
   const len = ac.sampleRate*sec, b = ac.createBuffer(2,len,ac.sampleRate);
   for (let c=0;c<2;c++){ const d=b.getChannelData(c); for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6); }
   return b;
 }
-const hz = (semis, oct = S.oct) => (S.tuning/4) * Math.pow(2, (semis + S.key + oct*12)/12);
+const hz = semis => (S.tuning/4) * Math.pow(2, (semis + S.key + S.oct*12)/12);
 const sem = i => { const sc = SCALES[S.scale], n = sc.length, m = ((i%n)+n)%n; return sc[m] + 12*Math.floor(i/n); };
 const noteAt = i => sem(i) + 12;
 
@@ -121,11 +121,11 @@ const DRUM_VOICES = {
   triangle(f,v,t,o){ const p=drumTune(f,.5), g=ac.createGain(), end=env(g,t,v*.25,.001,2.2); g.connect(o); partials(2600*p,[[1,1],[2.76,.4],[5.4,.2]],g,t,end); }
 };
 const DRUM_INSTS = new Set(Object.keys(DRUM_VOICES));
-let SAMPLE_TID = null;
+let SAMPLE = null, SAMPLE_NAME = '';   // your uploaded sound, as an AudioBuffer
 const VOICES = {
   ...DRUM_VOICES,
   sampler(f,v,t,o){
-    const b = sampleBuffer(trk(SAMPLE_TID ?? S.cur)); if (!b){ VOICES.bell(f,v,t,o); return; }
+    const b = SAMPLE; if (!b){ VOICES.bell(f,v,t,o); return; }
     const g = ac.createGain(), src = ac.createBufferSource(), dur = b.duration/Math.max(.25, f/(S.tuning/2*Math.pow(2, S.key/12)));
     src.buffer = b; src.playbackRate.value = f/(S.tuning/2*Math.pow(2, S.key/12));   // the root ring plays the sample at its own pitch
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v*.9, t + .004);
@@ -254,40 +254,25 @@ function setLbl(el, str){
 }
 document.querySelectorAll('.top button').forEach(b => setLbl(b, b.textContent.trim()));
 function fitTop(){
-  const top = document.querySelector('.top'), rows = [...top.querySelectorAll('.transport,.btns')];
+  const top = document.querySelector('.top'), rows = [top.querySelector('.btns')];
   const over = () => rows.some(r => r.scrollWidth > r.clientWidth + 1);
   top.classList.remove('c1','c2','c3');
   if (innerWidth <= 640) return;               // phones swipe the rows sideways instead
   for (const c of ['c1','c2','c3']){ if (!over()) break; top.classList.add(c); }
-  if (typeof placeTimeline === 'function') placeTimeline();
   if (typeof placeSide === 'function') placeSide();
 }
 addEventListener('resize', fitTop);
-/* ---- Mixer channels ---- */
-const chans = {};
-const trk = id => S.tracks.find(t => t.id === id);
-const curT = () => trk(S.cur) || S.tracks[0];
-const trackOf = st => trk(st.track) || null;
-const instOf = st => { const t = trackOf(st); return t ? t.inst : (st.inst || 'bell'); };
-const trackIndex = t => S.tracks.indexOf(t) + 1;
-const trackName = t => t.name || ('Track ' + trackIndex(t));
-function trackRGB(t){ return hsl2rgb((t.id*83 + 15) % 360, 72, LIGHT ? 42 : 64); }
-function mixOf(key){ const t = trk(key); if (t) return t; return S.mix[key] || (S.mix[key] = { v:80, m:false, s:false }); }
-function chanGain(key){ const m = mixOf(key), solo = S.tracks.some(x => x.s); return (m.m || (solo && !m.s)) ? 0 : m.v/80; }
-// every track has its own fader plus its own reverb and echo sends
-// each track: input → its effect → fader → master (plus reverb and echo sends)
+/* ---- Sound effects: input → effect 1 → effect 2 → … → volume → master ---- */
 const AFX_NAMES = {reverb:'Reverb', echo:'Echo', flanger:'Flanger', chorus:'Chorus', phaser:'Phaser', tremolo:'Tremolo', wah:'Auto-Wah', drive:'Distortion', crush:'Bitcrush', lofi:'Lo-Fi', phone:'Telephone'};
 const VFX_NAMES = {strobe:'Strobe', pulse:'Pulse', shimmer:'Shimmer', rainbow:'Rainbow', glow:'Glow', spin:'Spin', jitter:'Jitter', breathe:'Breathe'};
-function fxOf(key){ const t = trk(key); if (!t) return []; return ((t.id === S.cur ? S.afxList : t.afxList) || []).filter(x => AFX_NAMES[x.type]); }
-// the track's effects run in order: input → effect 1 → effect 2 → … → fader
-function buildFx(g){
-  const list = fxOf(g.key), n = ac.currentTime;
+function buildFx(){
+  if (!ac) return;
+  const g = bus, list = S.afxList.filter(x => AFX_NAMES[x.type]), n = ac.currentTime;
   (g.fxNodes || []).forEach(x => { try { x.disconnect(); } catch {} if (x.stop) try { x.stop(); } catch {} });
   try { g.inp.disconnect(); } catch {}
   const nodes = g.fxNodes = [], mk = x => { nodes.push(x); return x; };
   const lfo = (hz, depth, target) => { const o = mk(ac.createOscillator()), d = mk(ac.createGain()); o.frequency.value = hz; d.gain.value = depth; o.connect(d); d.connect(target); o.start(n); return o; };
   const shaper = curveFn => { const ws = mk(ac.createWaveShaper()), c = new Float32Array(1024); for (let i=0;i<1024;i++) c[i] = curveFn(i/512 - 1); ws.curve = c; return ws; };
-  g.fxSig = JSON.stringify(list) + (list.some(x => x.type === 'echo') ? '@' + S.bpm : '');
   let src = g.inp;
   for (const fx of list){
     const amt = (fx.amt ?? 60)/100, o = mk(ac.createGain());
@@ -310,30 +295,14 @@ function buildFx(g){
     }
     src = o;
   }
-  src.connect(g.lp || g);
+  src.connect(g);
 }
-function chan(inst){
-  if (!chans[inst]){
-    const g = ac.createGain(); g.gain.value = chanGain(inst); g.connect(master);
-    g.key = isNaN(inst) ? inst : +inst; g.inp = ac.createGain();
-    g.lp = ac.createBiquadFilter(); g.lp.type = 'lowpass'; g.lp.frequency.value = 20000; g.lp.Q.value = .8; g.au = ac.createGain(); g.dk = ac.createGain();
-    g.lp.connect(g.au); g.au.connect(g.dk); g.dk.connect(g); buildFx(g);
-    chans[inst] = g;
-  }
-  return chans[inst].inp;
-}
-function updateMix(){ if (!ac) return; const n = ac.currentTime;
-  for (const k in chans){ const g = chans[k];
-    g.gain.setTargetAtTime(chanGain(isNaN(k) ? k : +k), n, .03);
-    const l2 = fxOf(g.key); if (g.fxSig !== JSON.stringify(l2) + (l2.some(x => x.type === 'echo') ? '@' + S.bpm : '')) buildFx(g); } }
+const updateFx = () => { if (!ac) return; bus.gain.setTargetAtTime(S.vol/80, ac.currentTime, .03); buildFx(); };
 const SUSTAINS = new Set(['clarinet','brass','accordion','cello','organ','flute','choir','strings','pad','reese','lead','supersaw','subbass','synthbass','bass','upright']);
-function play(inst, idx, vel, when, panPos=0, dur, tid){
+function play(inst, idx, vel, when, panPos=0, dur){
   ensureAudio();
   if (!VOICES[inst]) inst = 'bell';
-  const t = when ?? ac.currentTime, out = pan(chan(tid ?? S.cur), panPos);
-  if (KICKS.has(inst)) duckOthers(t, tid ?? S.cur);
-  const tk = trk(tid ?? S.cur), oc = tk && tk.oct !== undefined ? tk.oct : S.oct, f = hz(noteAt(idx), oc);   // each track plays in its own octave
-  SAMPLE_TID = tid ?? S.cur;
+  const t = when ?? ac.currentTime, out = pan(bus.inp, panPos), f = hz(noteAt(idx));
   if (!dur){ VOICES[inst](f, vel, t, out); return null; }
   // held note: build it behind a gate, remember every source so release can stop them
   const gate = ac.createGain(); gate.connect(out);
@@ -343,29 +312,25 @@ function play(inst, idx, vel, when, panPos=0, dur, tid){
   HOLD = SUSTAINS.has(inst) ? (dur === Infinity ? 60 : dur + .6) : 0; holdUsed = false;
   try { VOICES[inst](f, vel, t, gate); }
   finally { ac.createOscillator = mk; ac.createBufferSource = mkB; HOLD = 0; }
-  const h = { gate, oscs, t, done:false, f, oc };
+  const h = { gate, oscs, t, done:false, f };
   if (dur !== Infinity) release(h, t + dur);
   return h;
 }
 const CHORDS = { single:[0], triad:[0,2,4], seventh:[0,2,4,6], sus2:[0,1,4], sus4:[0,3,4], power:[0,4], ninth:[0,2,4,8], octave:[0,'o'], stack:[0,4,8] };
 const CHORD_NAMES = { single:'Single Note', triad:'Triad', seventh:'Seventh', sus2:'Sus2', sus4:'Sus4', power:'Power', ninth:'Add9', octave:'Octaves', stack:'Fifths Stack' };
-const ringHits = {};
 function chordIdx(idx, ch){ const n = SCALES[S.scale].length; return (CHORDS[ch] || CHORDS.single).map(o => idx + (o === 'o' ? n : o)); }
-function voice(inst, idx, vel, when, panPos=0, dur, ch=S.chord, tid){
-  const list = chordIdx(idx, ch), now = performance.now();
-  if (ac){ const lag = Math.max(0, ((when ?? ac.currentTime) - ac.currentTime)*1000), tk0 = trk(tid ?? S.cur), sm = tk0 && tk0.strum !== undefined ? tk0.strum : S.strum; list.forEach((i, k) => ringHits[i] = now + lag + k*sm); }
-  if (list.length === 1) return play(inst, idx, vel, when, panPos, dur, tid);
+function voice(inst, idx, vel, when, panPos=0, dur, ch=S.chord){
+  const list = chordIdx(idx, ch);
+  if (list.length === 1) return play(inst, idx, vel, when, panPos, dur);
   ensureAudio();
   const t = when ?? ac.currentTime, v = vel/(1 + .3*(list.length-1)) * 1.25;
-  const tk = trk(tid ?? S.cur), strum = tk && tk.strum !== undefined ? tk.strum : S.strum;
-  const group = list.map((i, k) => play(inst, i, v, t + k*strum/1000, panPos, dur, tid));
+  const group = list.map((i, k) => play(inst, i, v, t + k*S.strum/1000, panPos, dur));
   return { group, offs: list.map(i => i - idx) };
 }
 function glideHeld(h, idx){
-  if (h && h.group){ h.group.forEach((x, k) => glideHeld(x, idx + h.offs[k])); h.offs.forEach(o => ringHits[idx+o] = performance.now()); return; }
-  if (h && !h.group) ringHits[idx] = performance.now();
+  if (h && h.group){ h.group.forEach((x, k) => glideHeld(x, idx + h.offs[k])); return; }
   if (!h || h.done || !ac) return;
-  const nf = hz(noteAt(idx), h.oc ?? S.oct), now = ac.currentTime, tc = Math.max(.008, S.glideTime/1000/3);
+  const nf = hz(noteAt(idx)), now = ac.currentTime, tc = Math.max(.008, S.glideTime/1000/3);
   if (!h.ratios) h.ratios = h.oscs.map(o => o.frequency && o.frequency.value > 25 ? o.frequency.value / h.f : 0);
   h.oscs.forEach((o, j) => { const r = h.ratios[j]; if (!r) return;
     o.frequency.cancelScheduledValues(now); o.frequency.setValueAtTime(o.frequency.value, now); o.frequency.setTargetAtTime(nf*r, now, tc); });
@@ -377,78 +342,6 @@ function release(h, at){
   h.gate.gain.setValueAtTime(1, at); h.gate.gain.setTargetAtTime(0, at, .08);
   h.oscs.forEach(o => { try { o.stop(at + .5); } catch {} });
 }
-function click(t, level){
-  const o = ac.createOscillator(), g = ac.createGain();
-  o.frequency.value = [1400, 2000, 2700][level];
-  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(S.metroVol/100*(level ? .4 : .26), t+.001); g.gain.exponentialRampToValueAtTime(.0001, t+.06);
-  o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t+.08); return o;
-}
-
-/* ---- Clock and loop ---- */
+// a steady beat clock: the arpeggiator, echoes and "repeat when held" step along it
 const beatLen = () => 60/S.bpm;
 const beatsAt = t => (t - clock0)/beatLen();
-let schedT = 0, countEnd = 0, countOscs = []; const flashes = [];
-function noteWhen(c, b, Lp = LB()){
-  let when = clock0 + (c*Lp + b)*beatLen();
-  const s16 = b*4, r = Math.round(s16);
-  if (S.swing && Math.abs(s16 - r) < .02 && r % 2) when += S.swing/100 * beatLen()/4 * .7;
-  return when;
-}
-// ---- song parts, short track loops, chord progression, sidechain, automation ----
-function trackLoopLen(t){ const L = LB(), v = t ? +trackVal(t, 'loopB') || 0 : 0; return v > 0 && v < L ? v : L; }
-const KICKS = new Set(['kick','b808','kick808']);
-function duckOthers(t, tid){
-  for (const tk of S.tracks){
-    if (tk.id === tid) continue; const d = (+trackVal(tk, 'duck') || 0)/100, g = chans[tk.id]; if (!d || !g || !g.dk) continue;
-    const at = Math.max(t, ac.currentTime); g.dk.gain.cancelScheduledValues(at); g.dk.gain.setValueAtTime(Math.max(.05, 1 - d*.9), at); g.dk.gain.setTargetAtTime(1, at + .03, beatLen()*.18);
-  }
-}
-// automation: points {b, v} across the loop; between points the value slides in a straight line
-function autoVal(pts, pos, L = LB()){
-  if (!pts || !pts.length) return null;
-  if (pts.length === 1) return pts[0].v;
-  let i = pts.findIndex(p => p.b > pos); if (i < 0) i = pts.length;
-  const a = pts[(i - 1 + pts.length) % pts.length], b = pts[i % pts.length];
-  let span = b.b - a.b, off = pos - a.b; if (span <= 0) span += L; if (off < 0) off += L;
-  return a.v + (b.v - a.v)*Math.min(1, off/span);
-}
-function applyAuto(now){
-  const L = LB(), pos = ((beatsAt(now + .03) % L) + L) % L;
-  for (const t of S.tracks){
-    const g = chans[t.id]; if (!g || !g.au) continue;
-    const a = t.auto || {}, vv = S.loop ? autoVal(a.vol, pos) : null, cv = S.loop ? autoVal(a.cut, pos) : null;
-    g.au.gain.setTargetAtTime(vv == null ? 1 : vv*vv*1.2, now, .03);
-    g.lp.frequency.setTargetAtTime(cv == null ? 20000 : 60*Math.pow(2, cv*8.35), now, .04);
-  }
-}
-function scheduler(){
-  if (!ac) return;
-  const now = ac.currentTime, ahead = now + .12;
-  applyAuto(now);
-  if (schedT < now) schedT = now;
-  if (S.loop){
-    const L = LB();
-    const each = (n, inst, st) => {
-      const Lt = trackLoopLen(trackOf(st)); if (n.b >= Lt) return;
-      const c0 = Math.floor(beatsAt(schedT)/Lt);
-      for (const c of [c0, c0+1]){
-        if (c === n.cyc) continue;
-        const when = noteWhen(c, n.b, Lt);
-        if (when < countEnd - .001) continue;
-        if (when > schedT && when <= ahead){ voice(inst, n.i, n.v || .32, when, n.pan || 0, n.d ? n.d*beatLen() : undefined, n.ch || 'single', st.track); flashes.push({ when, st, pi: n.pi, n }); }
-      }
-    };
-    for (const st of strokes) if (st.notes) for (const n of st.notes) each(n, instOf(st), st);
-    if (S.metro){
-      for (let k = Math.ceil(beatsAt(schedT)); ; k++){
-        const t = clock0 + k*beatLen();
-        if (t > ahead) break;
-        if (t <= schedT || t < countEnd - .001) continue;
-        const pos = ((k % L) + L) % L;
-        click(t, pos === 0 ? 2 : pos % 4 === 0 ? 1 : 0);
-      }
-    }
-  }
-  schedT = ahead;
-}
-

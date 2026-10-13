@@ -89,28 +89,21 @@ function simplify(p, tol){
   }
   return p.filter((_, i) => keep[i]);
 }
-/* ---- Track zones: each track's drawing is drawn inside its own ring of the mandala (the sound still follows where you drew) ---- */
+/* ---- Ring: the drawing can be squeezed into one ring of the mandala (the sound still follows where you drew) ---- */
 const ZONES = { center:[0,.2], inner:[.2,.4], middle:[.4,.6], outer:[.6,.8], edge:[.8,1] };
-function zoneOf(t){
-  if (!t) return null;
-  const z = (t.id === S.cur ? S.zone : t.zone) || 'all';
-  if (z === 'all') return null;
-  if (ZONES[z]) return ZONES[z];
-  const i = S.tracks.indexOf(t), N = S.tracks.length;   // auto: track 1 in the middle, later tracks further out
-  return N < 2 ? null : [i/N, (i+1)/N];
-}
-const zoneSig = t => { const z = zoneOf(t); return z ? z[0].toFixed(3) + ',' + z[1].toFixed(3) + '|' + Math.round(maxR()) : ''; };
+const zoneOf = () => ZONES[S.zone] || null;
+const zoneSig = () => { const z = zoneOf(); return z ? z + '|' + Math.round(maxR()) : ''; };
 function zoneMap(z, x, y){
   const R = maxR(), d = Math.hypot(x, y) || 1e-6, a = z[0] + (z[0] > 0 ? .015 : 0), b = z[1] - .015, nd = R*(a + Math.min(1, d/R)*(b - a));
   return [x*nd/d, y*nd/d];
 }
 function visPts(st){
-  const t = trackOf(st), z = zoneOf(t); if (!z) return st.pts;
-  const sig = zoneSig(t) + '|' + st.pts.length;
+  const z = !st.flat && zoneOf(); if (!z) return st.pts;
+  const sig = zoneSig() + '|' + st.pts.length;
   if (st._vp && st._vpSig === sig) return st._vp;
   st._vp = st.pts.map(([x, y]) => zoneMap(z, x, y)); st._vpSig = sig; return st._vp;
 }
-const zoneW = st => { const z = zoneOf(trackOf(st)); return z ? z[1] - z[0] : 1; };
+const zoneW = () => { const z = zoneOf(); return z ? z[1] - z[0] : 1; };
 function build(st){
   const p = visPts(st), w = st.width, path = new Path2D(), q = simplify(p, .7);
   path.moveTo(q[0][0], q[0][1]);
@@ -123,7 +116,7 @@ function build(st){
   // chord strokes: one extra line per chord note, pushed inward onto that note's pitch ring
   st.chordPaths = null;
   if (st.ch && st.ch !== 'single' && CHORDS[st.ch]){
-    const n = SCALES[S.scale].length, step = maxR()/(n*3)*zoneW(st), offs = chordIdx(0, st.ch).filter(o => o);
+    const n = SCALES[S.scale].length, step = maxR()/(n*3)*zoneW(), offs = chordIdx(0, st.ch).filter(o => o);
     st.chordPaths = offs.map(o => {
       const cp = new Path2D(); let first = true;
       for (const pt of q){ const d = Math.hypot(pt[0], pt[1]) || 1, nd = Math.max(2, d - o*step), x = pt[0]*nd/d, y = pt[1]*nd/d; first ? cp.moveTo(x, y) : cp.lineTo(x, y); first = false; }
@@ -143,7 +136,7 @@ function drawBrush(g, st, col, al, lw, e, glow, now, core, main){
       g.strokeStyle = MS; g.lineWidth = lw*.9; g.stroke(st.alt);
       g.strokeStyle = core; g.lineWidth = Math.max(.6, lw*.3); g.stroke(st.alt); break;
     case 'stamp': {   // emoji, letters or your own picture along the line
-      const q = st.stampQ || [], sz = Math.max(9, st.width*8), img = stampImgOf(st), txt = st.stamp || S.stamp || '✿';
+      const q = st.stampQ || [], sz = Math.max(9, st.width*8), img = stampImgOf(), txt = st.stamp || S.stamp || '✿';
       g.fillStyle = MS; g.font = `${sz}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
       for (const o of q){ g.save(); g.translate(o.x, o.y); g.rotate(Math.atan2(o.ty, o.tx)); if (img) g.drawImage(img, -sz/2, -sz/2, sz, sz); else g.fillText(txt, 0, 0); g.restore(); }
       g.textAlign = 'left'; g.textBaseline = 'alphabetic'; break; }
@@ -160,23 +153,23 @@ function drawBrush(g, st, col, al, lw, e, glow, now, core, main){
 
 // brush picker with live previews
 const STAMP_IMGS = new Map();
-function stampImgOf(st){
-  const t = st.track !== undefined ? trackOf(st) : null, src = t ? trackVal(t, 'stampImg') : S.stampImg; if (!src) return null;
+function stampImgOf(){
+  const src = S.stampImg; if (!src) return null;
   let im = STAMP_IMGS.get(src); if (!im){ im = new Image(); im.src = src; STAMP_IMGS.set(src, im); }
   return im.complete && im.naturalWidth ? im : null;
 }
 function previewOn(c, brush){
   const g = c.getContext('2d'); g.setTransform(2,0,0,2,0,0); g.clearRect(0,0,88,28); g.lineCap = g.lineJoin = 'round';
-  const st = { brush, width:1.4, seed:7, pts:[] };
+  const st = { brush, width:1.4, seed:7, pts:[], flat:true };
   for (let i=0;i<=40;i++){ st.pts.push([8 + i*1.8, 14 + Math.sin(i/40*TAU)*6]); }
-  build(st); drawBrush(g, st, typeof ACC === 'string' ? ACC : '255,79,216', 1, 1.6, .2, .3, 0, 'rgba(255,250,240,.25)');   // previews glow in the interface colour
+  build(st); drawBrush(g, st, ACC, 1, 1.6, .2, .3, 0, 'rgba(255,250,240,.25)');   // previews glow in the interface colour
 }
 function renderBrushGrid(){
   const pop = $('brushPop'); pop.innerHTML = '';
   for (const k in BRUSHES){
     const b = document.createElement('button'); b.className = 'tile'; b.dataset.v = k; b.setAttribute('role','menuitemradio'); b.setAttribute('aria-label', BRUSHES[k].name);
     const c = document.createElement('canvas'); c.width = 176; c.height = 56; b.append(c); pop.append(b); previewOn(c, k);
-    b.onclick = () => { S.brush = k; stashTrack(); syncBrush(); setBrushPop(false); };
+    b.onclick = () => { S.brush = k; syncBrush(); setBrushPop(false); };
   }
 }
 function setBrushPop(open){

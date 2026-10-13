@@ -37,6 +37,7 @@ There are no dependencies. `node build.js` glues `src/` into a single file, `dis
 
 | Version | What changed |
 |---|---|
+| 2.3.0 | code cut in half: removed the hidden DAW leftovers (timeline, tracks, saving, export); screenshot button; settings slimmed |
 | 2.2.0 | strokes in the interface colour, draw anywhere, faster |
 | 2.1.0 | options back, colour picker, 7 languages, title card |
 | 2.0.0 | numnuts-style CRT look; trimmed down to draw, sound, style and stay length |
