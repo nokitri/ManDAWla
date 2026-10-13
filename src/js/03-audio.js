@@ -248,6 +248,7 @@ const VOICES = {
 };
 /* ---- Top bar: shrinks to icons when the window is too narrow for the labels ---- */
 function setLbl(el, str){
+  el.dataset.en = str; if (lang && lang !== 'en') str = str.replace(/ (.+)$/, (m, tx) => ' ' + i18n(tx));
   const i = str.indexOf(' '), ic = i > 0 ? str.slice(0, i) : str, tx = i > 0 ? str.slice(i + 1) : '';
   el.innerHTML = `<span class="ic">${ic}</span>` + (tx ? `<span class="tx"> ${tx}</span>` : ''); el.setAttribute('aria-label', tx || ic);
 }
