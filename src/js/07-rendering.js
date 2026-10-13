@@ -59,7 +59,7 @@ const drawLayers = (g, w, h) => { for (let i = 1; i < TRAIL_LAYERS.length; i++) 
 function drawStrokes(C0, M0, now){
   const re = S.react/100;
   const breathe = 1 + (bass*.05 + beat*.08)*re, lv = [bass, mid, high];
-  const core = LIGHT ? 'rgba(20,18,24,.6)' : 'rgba(255,252,245,.8)';
+  const core = LIGHT ? 'rgba(20,18,24,.6)' : 'rgba(255,252,245,.22)';   // a faint hot core, so strokes keep their colour instead of going white
   const base = ctx.getTransform(), cols = new Array(16), mains = new Array(16);
   // crowded screens get gentler strokes so additive glow doesn't wash out to white
   const dens = LIGHT ? 1 : Math.max(.42, Math.min(1, 1.12 - strokes.length*C0.length/900));
@@ -301,7 +301,7 @@ function frame(now){
   ctx.fillStyle = `rgba(0,0,0,${fadeA})`; ctx.fillRect(0,0,W,H);
   if (frameN % 12 === 0){ ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0,0,W,H); }   // clears the faint residue a slow fade leaves behind
 
-  ctx.save(); ctx.translate(W/2, CY()); ctx.globalCompositeOperation = LIGHT ? 'source-over' : 'lighter';
+  ctx.save(); ctx.translate(W/2, CY()); ctx.globalCompositeOperation = LIGHT ? 'source-over' : 'screen';   // screen, not lighter: overlaps glow without burning to white
   ctx.save(); ctx.beginPath(); ctx.arc(0, 0, R*1.01, 0, TAU); ctx.clip(); ctx.rotate(rot);
   if (!li){
   C = copies(now); M = copyMatrices(C);
