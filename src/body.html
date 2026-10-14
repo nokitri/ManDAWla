@@ -1,0 +1,65 @@
+
+<canvas id="c" aria-label="Symmetry drawing canvas. Drag to draw and play notes."></canvas>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="crtfx" aria-hidden="true"></div>
+
+<div class="top">
+  <header class="title"><h1>mandawla</h1><span class="build">{{BUILD}}</span></header>
+  <div class="btns">
+    <button id="tUndo">↶ Undo</button>
+    <button id="tClear">✕ Clear</button>
+    <button id="snap">▣ Screenshot</button>
+    <button id="fs">⤢ Fullscreen</button>
+    <button id="colorBtn" class="swatch" aria-haspopup="true" aria-expanded="false" >▣ Color</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="deck" id="deck">
+  <div class="head">
+    <div class="drow dtop"><button id="surpriseAll" class="surp">🎲 Surprise Me</button><div class="sright"><button id="hideDeck">▾ Hide</button></div></div>
+    <div class="dsec"><div class="dsh">Sound</div><div class="dfields">
+      <div class="field"><label class="lbl" for="scale">Scale</label>
+        <select id="scale">
+          <option value="penta">PENTATONIC</option><option value="minpenta">MINOR PENTATONIC</option>
+          <option value="major">MAJOR</option><option value="minor">MINOR</option>
+        </select></div>
+      <div class="field"><label class="lbl" for="key">Key</label>
+        <select id="key">
+          <option value="0">A</option><option value="1">B♭</option><option value="2">B</option><option value="3">C</option>
+          <option value="4">C♯</option><option value="5">D</option><option value="6">E♭</option><option value="7">E</option>
+          <option value="8">F</option><option value="9">F♯</option><option value="10">G</option><option value="11">A♭</option>
+        </select></div>
+      <div class="field"><label class="lbl" for="tuning">Tuning</label><select id="tuning"><option value="432">A = 432</option><option value="440">A = 440</option></select></div>
+      <div class="field"><label class="lbl" for="chordSel">Chord</label><select id="chordSel">
+        <option value="single">SINGLE NOTE</option><option value="triad">TRIAD</option><option value="seventh">SEVENTH</option>
+        <option value="sus2">SUS2</option><option value="sus4">SUS4</option><option value="power">POWER</option>
+        <option value="ninth">ADD9</option><option value="octave">OCTAVES</option><option value="stack">FIFTHS STACK</option>
+        </select></div>
+      <div class="field"><label class="lbl" for="tvol">Vol</label><input id="tvol" type="range" min="0" max="120" value="80"><span class="val" id="tvolVal">80</span></div>
+    </div></div>
+    <div class="dsec"><div class="dsh">Visuals</div><div class="dfields">
+      <div class="field"><span class="lbl">Style</span><button id="brushBtn" class="brushBtn" aria-haspopup="true" aria-expanded="false" aria-label="Brush"><canvas id="brushPrev" width="176" height="56" aria-hidden="true"></canvas><span class="car">▾</span></button></div>
+      <div class="field"><label class="lbl" for="width">Size</label><input id="width" type="range" min=".25" max="6" value="1" step=".25"><span class="val" id="widthVal">1</span></div>
+      <div class="field"><label class="lbl" for="stay">Fade</label><input id="stay" type="range" min="0" max="7" value="1"><span class="val" id="stayVal">2 S</span></div>
+      <div class="field"><label class="lbl" for="kalSel">Pattern</label><select id="kalSel"></select></div>
+      <div class="field"><label class="lbl" for="sym">Copies</label><input id="sym" type="range" min="1" max="16" value="8"><span class="val" id="symVal">8</span></div>
+      <div class="field"><span class="lbl">Mirror</span><button id="mirror" aria-pressed="true">On</button></div>
+      <div class="field" id="stampRow" hidden><label class="lbl" for="stampTxt">Stamp</label><div class="stampc"><input id="stampTxt" type="text" maxlength="4" value="✿" aria-label="Stamp text or emoji"><button id="stampUp">Image…</button><button id="stampClr" hidden>✕</button><input id="stampFile" type="file" accept="image/*" hidden></div></div>
+    </div></div>
+  </div>
+</div>
+
+
+<div id="palette" class="dpanel" hidden><div id="phos"></div><label><span>Custom</span> <input id="phosCustom" type="color" value="#ff4fd8"></label></div>
+<div class="brushPop" id="brushPop" hidden role="menu" aria-label="Brushes"></div>
+<button id="showDeck" class="handle" hidden>▴ Show</button>
+<div id="peekZone" class="peek" hidden></div>
+
+<div class="overlay" id="overlay" hidden>
+  <img id="snapImg" alt="Snapshot of your mandala">
+  <div class="hint" id="snapHint">Right-click or long-press the image to save it.</div>
+  <div class="row"><button id="saveSnap" class="primary" hidden>Save Image</button><button id="closeSnap">Close</button></div>
+</div>
+
